@@ -13,6 +13,7 @@ pub struct Shot {
 impl Discoverable for Shot {
     fn get_col(&self) -> usize { self.position.col }
     fn get_row(&self) -> usize { self.position.row }
+    fn show(&self) -> &'static str { if self.exploding { "*" } else { "|" }}
 }
 
 impl Shot {
@@ -46,7 +47,6 @@ impl Shot {
 
 impl Drawable for Shot {
     fn draw(&self, frame: &mut Frame) {
-        let value = if self.exploding { "*" } else { "|" };
-        frame.set_shot(self, value);
+        frame.update_item(self);
     }
 }

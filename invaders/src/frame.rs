@@ -1,10 +1,10 @@
 use std::io::Stdout;
-
-use crate::{NUM_COLS, NUM_ROWS, invaders::Invader, player::Player, shot::Shot};
+use crate::{NUM_COLS, NUM_ROWS};
 
 pub trait Discoverable {
     fn get_col(&self) -> usize;
     fn get_row(&self) -> usize;
+    fn show(&self) -> &'static str;
 }
 
 #[derive(Debug)]
@@ -13,26 +13,13 @@ pub struct Position {
     pub row: usize,
 }
 
-impl Discoverable for Position {
-    fn get_col(&self) -> usize { self.col }
-    fn get_row(&self) -> usize { self.row }
-}
-
 pub struct Frame {
     frame: Vec<Vec<&'static str>>
 }
 
 impl Frame {
-    pub fn set_invader(&mut self, invader: &Invader, value: &'static str) {
-        self.frame[invader.get_col()][invader.get_row()] = value;
-    }
-
-    pub fn set_player(&mut self, player: &Player) {
-        self.frame[player.get_col()][player.get_row()] = "A";
-    }
-
-    pub fn set_shot(&mut self, shot: &Shot, value: &'static str) {
-        self.frame[shot.get_col()][shot.get_row()] = value;
+    pub fn update_item(&mut self, drawable: &dyn Discoverable) {
+        self.frame[drawable.get_col()][drawable.get_row()] = drawable.show();
     }
 
     pub fn get_value_at(&self, col: usize, row: usize) -> &'static str {

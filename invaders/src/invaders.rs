@@ -9,12 +9,14 @@ enum Direction {
 }
 
 pub struct Invader {
-    position: Position
+    position: Position,
+    how_i_look: &'static str
 }
 
 impl Discoverable for Invader {
     fn get_col(&self) -> usize { self.position.col }
     fn get_row(&self) -> usize { self.position.row }
+    fn show(&self) -> &'static str { self.how_i_look }
 }
 
 pub struct Invaders {
@@ -30,7 +32,7 @@ impl Invaders {
         for col in 0..NUM_COLS {
             for row in 0..NUM_ROWS {
                 if (col > 1) && (col < NUM_COLS - 2) && (row > 0) && (row < NUM_ROWS / 2) && (col % 2 == 0) && (row % 2 == 0) {
-                    army.push(Invader { position: Position { col, row }});
+                    army.push(Invader { position: Position { col, row }, how_i_look: "x" });
                 }
             }
         }
@@ -40,6 +42,7 @@ impl Invaders {
 
     pub fn update(&mut self, delta: Duration) -> bool {
         self.move_timer.update(delta);
+        self.update_invader_look();
         if self.move_timer.ready {
             self.move_timer.reset();
             let should_move_downwards = self.set_horizontal_direction();
@@ -84,6 +87,14 @@ impl Invaders {
         }
     }
 
+    fn update_invader_look(&mut self) {
+        for invader in self.army.iter_mut() {
+            let value = self.move_timer.time_left.as_secs_f32() / self.move_timer.duration.as_secs_f32();
+            let look = if value > 0.5 { "x" } else { "+" };
+            invader.how_i_look = look;
+        }
+    }
+
     pub fn all_killed(&self) -> bool {
         self.army.is_empty()
     }
@@ -108,9 +119,7 @@ impl Invaders {
 impl Drawable for Invaders {
     fn draw(&self, frame: &mut Frame) {
         for invader in self.army.iter() {
-            let value = self.move_timer.time_left.as_secs_f32() / self.move_timer.duration.as_secs_f32();
-            let look_and_feel = if value > 0.5 { "x" } else { "+" };
-            frame.set_invader(invader, look_and_feel);
+            frame.update_item(invader);
         }
     }
 }

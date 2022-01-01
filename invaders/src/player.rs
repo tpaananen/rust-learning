@@ -66,11 +66,12 @@ impl Player {
 impl Discoverable for Player {
     fn get_col(&self) -> usize { self.position.col }
     fn get_row(&self) -> usize { self.position.row }
+    fn show(&self) -> &'static str { "A" }
 }
 
 impl Drawable for Player {
     fn draw(&self, frame: &mut Frame) {
-        frame.set_player(&self);
+        frame.update_item(self);
         for shot in self.shots.iter() {
             shot.draw(frame);
         }
