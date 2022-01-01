@@ -1,14 +1,5 @@
-use std::{
-    io,
-    error::Error,
-    sync::mpsc,
-    thread,
-};
-use crossterm::{
-    cursor::{Hide, Show},
-    terminal::{self, EnterAlternateScreen, LeaveAlternateScreen},
-    ExecutableCommand,
-};
+use std::{io, thread, error::Error, sync::mpsc};
+use crossterm::{cursor::{Hide, Show}, terminal::{self, EnterAlternateScreen, LeaveAlternateScreen}, ExecutableCommand};
 use invaders::{sounds::GameAudio, render::render_screen, game::game_loop};
 
 fn main() -> Result<(), Box<dyn Error>> {

@@ -1,7 +1,5 @@
 use std::time::Duration;
-
 use rusty_time::prelude::Timer;
-
 use crate::frame::{Drawable, Frame, Position, Discoverable};
 
 pub struct Shot {

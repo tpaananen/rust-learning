@@ -1,9 +1,8 @@
 use std::time::Duration;
-use crate::{
-    NUM_COLS, NUM_ROWS, NUM_SHOTS,
-    frame::{Frame, Drawable, Position, Discoverable},
-    shot::Shot, invaders::Invaders
-};
+use crate::{NUM_COLS, NUM_ROWS, NUM_SHOTS};
+use crate::shot::Shot;
+use crate::invaders::Invaders;
+use crate::frame::{Frame, Drawable, Position, Discoverable};
 
 pub struct Player {
     position: Position,
