@@ -67,7 +67,7 @@ impl Player {
         count
     }
 
-    pub(crate) fn count_shots(&self) -> usize {
+    pub fn count_shots(&self) -> usize {
         self.num_total_shots_taken
     }
 }
