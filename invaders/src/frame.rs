@@ -1,4 +1,5 @@
 use std::io::Stdout;
+use array2d::Array2D;
 use crate::{NUM_COLS, NUM_ROWS};
 
 pub trait Discoverable {
@@ -14,38 +15,32 @@ pub struct Position {
 }
 
 pub struct Frame {
-    frame: Vec<Vec<&'static str>>
+    frame: Array2D<&'static str>
 }
 
 impl Frame {
-    pub fn update_item(&mut self, drawable: &dyn Discoverable) {
-        self.frame[drawable.get_col()][drawable.get_row()] = drawable.show();
+    pub fn new() -> Self {
+        Frame { frame: Array2D::from_row_major(&vec![" "; NUM_COLS * NUM_ROWS], NUM_ROWS, NUM_COLS) }
     }
 
-    pub fn get_value_at(&self, col: usize, row: usize) -> &'static str {
-        self.frame[col][row]
+    pub fn update_item(&mut self, drawable: &dyn Discoverable) {
+        self.frame.set(drawable.get_row(), drawable.get_col(), drawable.show()).unwrap();
+    }
+
+    pub fn get_value_at(&self, column: usize, row: usize) -> &'static str {
+        match self.frame.get(row, column) {
+            Some(val) => val,
+            None => " "
+        }
     }
 
     pub fn updade_each_cell<F>(&self, stdout: &mut Stdout, renderer: F) where F: Fn(usize, usize, &str, &mut Stdout) {
-        for (col_index, col) in self.frame.iter().enumerate() {
-            for (row_index, &current_value) in col.iter().enumerate() {
+        for (row_index, row_iter) in self.frame.rows_iter().enumerate() {
+            for (col_index, current_value) in row_iter.enumerate() {
                 renderer(col_index, row_index, current_value, stdout);
             }
         }
     }
-}
-
-pub fn new_frame() -> Frame {
-    let mut frame = Vec::with_capacity(NUM_COLS);
-    for _ in 0..NUM_COLS {
-        let mut col = Vec::with_capacity(NUM_ROWS);
-        for _ in 0..NUM_ROWS {
-            col.push(" ");
-        }
-        frame.push(col);
-    }
-
-    Frame { frame }
 }
 
 pub trait Drawable {

@@ -1,10 +1,10 @@
-use std::io::{Stdout, Write, self};
+use std::io::{Stdout, Write, stdout};
 use std::sync::mpsc::Receiver;
 use crossterm::QueueableCommand;
 use crossterm::cursor::MoveTo;
 use crossterm::style::{SetBackgroundColor, Color};
 use crossterm::terminal::{Clear, ClearType};
-use crate::frame::{Frame, self};
+use crate::frame::Frame;
 
 fn render(stdout: &mut Stdout, last_frame: &Frame, curr_frame: &Frame, force: bool) {
     if force {
@@ -25,8 +25,8 @@ fn render(stdout: &mut Stdout, last_frame: &Frame, curr_frame: &Frame, force: bo
 }
 
 pub fn render_screen(render_rx: Receiver<Frame>) {
-    let mut last_frame = frame::new_frame();
-    let mut stdout = io::stdout();
+    let mut last_frame = Frame::new();
+    let mut stdout = stdout();
     render(&mut stdout, &last_frame, &last_frame, true);
     while let Ok(curr_frame) = render_rx.recv() {
         render(&mut stdout, &last_frame, &curr_frame, false);
