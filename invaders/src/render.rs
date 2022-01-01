@@ -13,8 +13,10 @@ fn render(stdout: &mut Stdout, last_frame: &Frame, curr_frame: &Frame, force: bo
         stdout.queue(SetBackgroundColor(Color::Black)).unwrap();
     }
 
-    curr_frame.updade_each_cell(stdout, |col_index, row_index, current_value, stdout| {
-        let previous_value = last_frame.get_value_at(col_index, row_index);
+    curr_frame.update_each_cell(
+        stdout,
+        last_frame,
+        |col_index, row_index, previous_value, current_value, stdout| {
         if current_value != previous_value || force {
             stdout.queue(MoveTo(col_index as u16, row_index as u16)).unwrap();
             println!("{}", current_value)

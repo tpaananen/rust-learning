@@ -36,10 +36,11 @@ impl Frame {
         }
     }
 
-    pub fn updade_each_cell<F>(&self, stdout: &mut Stdout, renderer: F) where F: Fn(usize, usize, &str, &mut Stdout) {
+    pub fn update_each_cell<F>(&self, stdout: &mut Stdout, prev_frame: &Frame, renderer: F) where F: Fn(usize, usize, &str, &str, &mut Stdout) {
         for (row_index, row_iter) in self.frame.rows_iter().enumerate() {
             for (col_index, current_value) in row_iter.enumerate() {
-                renderer(col_index, row_index, current_value, stdout);
+                let previous_value = prev_frame.get_value_at(col_index, row_index);
+                renderer(col_index, row_index, previous_value, current_value, stdout);
             }
         }
     }
