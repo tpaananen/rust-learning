@@ -1,12 +1,11 @@
 use std::{time::Duration, cmp::max};
 use rusty_time::prelude::Timer;
-
 use crate::{NUM_COLS, NUM_ROWS, frame::{Frame, Drawable}};
 
-#[derive(Eq, PartialEq)]
+#[derive(PartialEq, Eq, Copy, Clone)]
 enum Direction {
-    Left,
-    Right
+    Left = -1,
+    Right = 1
 }
 
 pub struct Invader {
@@ -65,7 +64,7 @@ impl Invaders {
                 }
             } else {
                 for invader in self.army.iter_mut() {
-                    invader.col = ((invader.col as i32) + direction_value(&self.direction)) as usize;
+                    invader.col = ((invader.col as i32) + self.direction as i32) as usize;
                 }
             }
 
@@ -96,23 +95,11 @@ impl Invaders {
     }
 }
 
-fn direction_value(direction: &Direction) -> i32 {
-    if *direction == Direction::Left {
-        -1
-    } else {
-        1
-    }
-}
-
 impl Drawable for Invaders {
     fn draw(&self, frame: &mut Frame) {
         for invader in self.army.iter() {
             let value = self.move_timer.time_left.as_secs_f32() / self.move_timer.duration.as_secs_f32();
-            frame[invader.col][invader.row] = if value > 0.5 {
-                "x"
-            } else {
-                "+"
-            };
+            frame[invader.col][invader.row] = if value > 0.5 { "x" } else { "+" };
         }
     }
 }
