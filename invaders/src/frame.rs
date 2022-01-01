@@ -36,10 +36,7 @@ impl Frame {
     }
 
     pub fn get_value_at(&self, column: usize, row: usize) -> &char {
-        match self.frame.get(row, column) {
-            Some(val) => val,
-            None => &' '
-        }
+        self.frame.get(row, column).unwrap_or(&' ')
     }
 
     pub fn update_each_cell<F>(&self, stdout: &mut Stdout, prev_frame: &Frame, renderer: F)
