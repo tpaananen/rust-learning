@@ -24,8 +24,8 @@ fn render(stdout: &mut Stdout, last_frame: &Frame, curr_frame: &Frame, force: bo
     stdout.flush().unwrap();
 }
 
-pub fn render_screen(render_rx: Receiver<Frame>) {
-    let mut last_frame = Frame::new();
+pub fn render_screen(render_rx: Receiver<Frame>, num_rows: usize, num_columns: usize) {
+    let mut last_frame = Frame::new(num_rows, num_columns);
     let mut stdout = stdout();
     render(&mut stdout, &last_frame, &last_frame, true);
     while let Ok(curr_frame) = render_rx.recv() {

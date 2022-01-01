@@ -1,5 +1,4 @@
 use std::time::Duration;
-use crate::{NUM_COLS, NUM_ROWS, NUM_SHOTS};
 use crate::shot::Shot;
 use crate::invaders::Invaders;
 use crate::frame::{Frame, Drawable, Position, Discoverable};
@@ -7,16 +6,20 @@ use crate::frame::{Frame, Drawable, Position, Discoverable};
 pub struct Player {
     position: Position,
     shots: Vec<Shot>,
+    num_columns: usize,
+    num_shots: usize
 }
 
 impl Player {
-    pub fn new() -> Self {
+    pub fn new(num_rows: usize, num_columns: usize, num_shots: usize) -> Self {
         Self {
             position: Position {
-                col: NUM_COLS / 2,
-                row: NUM_ROWS - 1,
+                col: num_columns / 2,
+                row: num_rows - 1,
             },
             shots: Vec::new(),
+            num_columns,
+            num_shots
         }
     }
 
@@ -27,13 +30,13 @@ impl Player {
     }
 
     pub fn move_right(&mut self) {
-        if self.position.col < NUM_COLS - 1 {
+        if self.position.col < self.num_columns - 1 {
             self.position.col += 1;
         }
     }
 
     pub fn shoot(&mut self) -> bool {
-        if self.shots.len() < NUM_SHOTS {
+        if self.shots.len() < self.num_shots {
             self.shots.push(Shot::new(self.position.col, self.position.row - 1));
             true
         } else {

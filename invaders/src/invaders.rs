@@ -1,6 +1,6 @@
 use std::{time::Duration, cmp::max};
 use rusty_time::prelude::Timer;
-use crate::{NUM_COLS, NUM_ROWS, frame::{Frame, Drawable, Discoverable, Position}};
+use crate::frame::{Frame, Drawable, Discoverable, Position};
 
 #[derive(PartialEq, Eq, Copy, Clone)]
 enum Direction {
@@ -22,22 +22,30 @@ impl Discoverable for Invader {
 pub struct Invaders {
     army: Vec<Invader>,
     move_timer: Timer,
-    direction: Direction
+    direction: Direction,
+    num_rows: usize,
+    num_columns: usize
 }
 
 impl Invaders {
-    pub fn new() -> Self {
+    pub fn new(num_rows: usize, num_columns: usize) -> Self {
         let mut army = Vec::new();
 
-        for col in 0..NUM_COLS {
-            for row in 0..NUM_ROWS {
-                if (col > 1) && (col < NUM_COLS - 2) && (row > 0) && (row < NUM_ROWS / 2) && (col % 2 == 0) && (row % 2 == 0) {
+        for col in 0..num_columns {
+            for row in 0..num_rows {
+                if (col > 1) && (col < num_columns - 2) && (row > 0) && (row < num_rows / 2) && (col % 2 == 0) && (row % 2 == 0) {
                     army.push(Invader { position: Position { col, row }, how_i_look: "x" });
                 }
             }
         }
 
-        Self { army, move_timer: Timer::from_millis(2000), direction: Direction::Right}
+        Self {
+            army,
+            move_timer: Timer::from_millis(2000),
+            direction: Direction::Right,
+            num_rows,
+            num_columns
+        }
     }
 
     pub fn update(&mut self, delta: Duration) -> bool {
@@ -63,7 +71,7 @@ impl Invaders {
             }
         } else {
             let max_col = self.army.iter().map(|invader| invader.get_col()).max().unwrap_or(0);
-            if max_col == NUM_COLS - 2 {
+            if max_col == self.num_columns - 2 {
                 self.direction = Direction::Left;
                 downwards = true
             }
@@ -76,7 +84,7 @@ impl Invaders {
             let new_duration = max(self.move_timer.duration.as_millis() - 250, 250);
             self.move_timer = Timer::from_millis(new_duration as u64);
             for invader in self.army.iter_mut() {
-                if invader.position.row < NUM_ROWS - 1 {
+                if invader.position.row < self.num_rows - 1 {
                     invader.position.row += 1;
                 }
             }
@@ -100,7 +108,7 @@ impl Invaders {
     }
 
     pub fn reached_bottom(&self) -> bool {
-        self.army.iter().map(|invader| invader.get_row()).max().unwrap_or(0) >= NUM_ROWS - 1
+        self.army.iter().map(|invader| invader.get_row()).max().unwrap_or(0) >= self.num_rows - 1
     }
 
     pub fn kill_invader_at(&mut self, discoverable: &dyn Discoverable) -> bool {

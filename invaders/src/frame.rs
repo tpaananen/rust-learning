@@ -1,6 +1,5 @@
 use std::io::Stdout;
 use array2d::Array2D;
-use crate::{NUM_COLS, NUM_ROWS};
 
 pub trait Discoverable {
     fn get_col(&self) -> usize;
@@ -19,8 +18,8 @@ pub struct Frame {
 }
 
 impl Frame {
-    pub fn new() -> Self {
-        Frame { frame: Array2D::from_row_major(&vec![" "; NUM_COLS * NUM_ROWS], NUM_ROWS, NUM_COLS) }
+    pub fn new(num_rows: usize, num_columns: usize) -> Self {
+        Frame { frame: Array2D::from_row_major(&vec![" "; num_rows * num_columns], num_rows, num_columns) }
     }
 
     pub fn update_item(&mut self, drawable: &dyn Discoverable) {

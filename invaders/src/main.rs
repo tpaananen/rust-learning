@@ -1,6 +1,6 @@
 use std::{io, thread, error::Error, sync::mpsc};
 use crossterm::{cursor::{Hide, Show}, terminal::{self, EnterAlternateScreen, LeaveAlternateScreen}, ExecutableCommand};
-use invaders::{sounds::GameAudio, render::render_screen, game::game_loop};
+use invaders::{sounds::GameAudio, render::render_screen, game::game_loop, NUM_ROWS, NUM_COLUMNS, NUM_SHOTS};
 
 fn main() -> Result<(), Box<dyn Error>> {
     // Setup audio
@@ -16,11 +16,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Render loop
     let (render_tx, render_rx) = mpsc::channel();
     let render_handle = thread::spawn(move || {
-        render_screen(render_rx);
+        render_screen(render_rx, NUM_ROWS, NUM_COLUMNS);
     });
 
     // Game loop
-    game_loop(&mut audio, &render_tx);
+    game_loop(&mut audio, &render_tx, NUM_ROWS, NUM_COLUMNS, NUM_SHOTS);
 
     // Cleanup
     drop(render_tx);

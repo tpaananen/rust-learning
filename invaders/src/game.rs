@@ -2,16 +2,22 @@ use std::{time::{Duration, Instant}, sync::mpsc::Sender, thread};
 use crossterm::event::{self, Event};
 use crate::{sounds::GameAudio, frame::{Frame, Drawable}, player::Player, invaders::Invaders};
 
-pub fn game_loop(audio: &mut GameAudio, render_tx: &Sender<Frame>) {
+pub fn game_loop(
+    audio: &mut GameAudio,
+    render_tx: &Sender<Frame>,
+    num_rows: usize,
+    num_columns: usize,
+    num_shots: usize) {
+
     let mut instant = Instant::now();
-    let mut player = Player::new();
-    let mut invaders = Invaders::new();
+    let mut player = Player::new(num_rows, num_columns, num_shots);
+    let mut invaders = Invaders::new(num_rows, num_columns);
 
     'gameloop: loop {
 
         let delta = instant.elapsed();
         instant = Instant::now();
-        let mut curr_frame = Frame::new();
+        let mut curr_frame = Frame::new(num_rows, num_columns);
 
         // Input
         if process_player_input(&mut player, audio) {
