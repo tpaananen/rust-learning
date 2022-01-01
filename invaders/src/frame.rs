@@ -10,10 +10,6 @@ pub trait Discoverable {
     }
 }
 
-pub trait RowItem {
-
-}
-
 #[derive(Debug)]
 pub struct Position {
     pub col: usize,
