@@ -5,6 +5,9 @@ pub trait Discoverable {
     fn get_col(&self) -> usize;
     fn get_row(&self) -> usize;
     fn show(&self) -> &'static str;
+    fn is_at_same_position_as(&self, other: &dyn Discoverable) -> bool {
+        self.get_col() == other.get_col() && self.get_row() == other.get_row()
+    }
 }
 
 #[derive(Debug)]
