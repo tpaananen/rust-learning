@@ -7,6 +7,7 @@ pub trait Discoverable {
     fn get_row(&self) -> usize;
 }
 
+#[derive(Debug)]
 pub struct Position {
     pub col: usize,
     pub row: usize,
@@ -31,17 +32,17 @@ impl Frame {
     }
 
     pub fn set_shot(&mut self, shot: &Shot, value: &'static str) {
-        self.frame[shot.col][shot.row] = value;
+        self.frame[shot.get_col()][shot.get_row()] = value;
     }
 
     pub fn get_value_at(&self, col: usize, row: usize) -> &'static str {
         self.frame[col][row]
     }
 
-    pub fn updade_each_cell<F>(&self, stdout: &mut Stdout, update: F) where F: Fn(usize, usize, &str, &mut Stdout) {
+    pub fn updade_each_cell<F>(&self, stdout: &mut Stdout, renderer: F) where F: Fn(usize, usize, &str, &mut Stdout) {
         for (col_index, col) in self.frame.iter().enumerate() {
             for (row_index, &current_value) in col.iter().enumerate() {
-                update(col_index, row_index, current_value, stdout);
+                renderer(col_index, row_index, current_value, stdout);
             }
         }
     }

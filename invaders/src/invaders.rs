@@ -92,11 +92,11 @@ impl Invaders {
         self.army.iter().map(|invader| invader.get_row()).max().unwrap_or(0) >= NUM_ROWS - 1
     }
 
-    pub fn kill_invader_at(&mut self, row: usize, col: usize) -> bool {
+    pub fn kill_invader_at(&mut self, discoverable: &dyn Discoverable) -> bool {
         if let Some(idx) = self
             .army
             .iter()
-            .position(|invader| (invader.get_col() == col) && (invader.get_row() == row)) {
+            .position(|invader| (invader.get_col() == discoverable.get_col()) && (invader.get_row() == discoverable.get_row())) {
                 self.army.remove(idx);
                 true
             } else {

@@ -16,27 +16,27 @@ impl GameAudio {
         Self { audio }
     }
 
-    pub fn explode(&mut self) {
+    pub fn play_explode(&mut self) {
         self.audio.play("explode");
     }
 
-    pub fn lose(&mut self) {
+    pub fn play_lose(&mut self) {
         self.audio.play("lose");
     }
 
-    pub fn moving(&mut self) {
+    pub fn play_moving(&mut self) {
         self.audio.play("move");
     }
 
-    pub fn pew(&mut self) {
+    pub fn play_pew(&mut self) {
         self.audio.play("pew");
     }
 
-    pub fn startup(&mut self) {
+    pub fn play_startup(&mut self) {
         self.audio.play("startup");
     }
 
-    pub fn win(&mut self) {
+    pub fn play_win(&mut self) {
         self.audio.play("win");
     }
 

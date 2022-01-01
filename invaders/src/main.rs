@@ -14,7 +14,7 @@ use invaders::{sounds::GameAudio, render::render_screen, game::game_loop};
 fn main() -> Result<(), Box<dyn Error>> {
     // Setup audio
     let mut audio = GameAudio::new();
-    audio.startup();
+    audio.play_startup();
 
     // Terminal
     let mut stdout = io::stdout();

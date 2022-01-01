@@ -21,11 +21,11 @@ pub fn game_loop(audio: &mut GameAudio, render_tx: &Sender<Frame>) {
         // Updates
         player.update(delta);
         if invaders.update(delta) {
-            audio.moving();
+            audio.play_moving();
         }
 
         if player.detect_hits(&mut invaders) {
-            audio.explode();
+            audio.play_explode();
         }
 
         // Draw & render
@@ -39,11 +39,11 @@ pub fn game_loop(audio: &mut GameAudio, render_tx: &Sender<Frame>) {
 
         // Win or lose?
         if invaders.all_killed() {
-            audio.win();
+            audio.play_win();
             println!("Player wins!");
             break 'gameloop;
         } else if invaders.reached_bottom() {
-            audio.lose();
+            audio.play_lose();
             println!("Player lose!");
             break 'gameloop;
         }
@@ -58,11 +58,11 @@ fn process_player_input(player: &mut Player, audio: &mut GameAudio) -> bool {
                 event::KeyCode::Right => player.move_right(),
                 event::KeyCode::Up => {
                     if player.shoot() {
-                        audio.pew();
+                        audio.play_pew();
                     }
                 },
                 event::KeyCode::Esc => {
-                    audio.lose();
+                    audio.play_lose();
                     return true;
                 },
                 _ => {}

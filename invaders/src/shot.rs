@@ -2,25 +2,31 @@ use std::time::Duration;
 
 use rusty_time::prelude::Timer;
 
-use crate::frame::{Drawable, Frame};
+use crate::frame::{Drawable, Frame, Position, Discoverable};
 
 pub struct Shot {
-    pub col: usize,
-    pub row: usize,
-    pub exploding: bool,
+    position: Position,
+    exploding: bool,
     timer: Timer
+}
+
+impl Discoverable for Shot {
+    fn get_col(&self) -> usize { self.position.col }
+    fn get_row(&self) -> usize { self.position.row }
 }
 
 impl Shot {
     pub fn new(col: usize, row: usize) -> Self {
-        Self { col, row, exploding: false, timer: Timer::from_millis(16) }
+        Self { position: Position { col, row }, exploding: false, timer: Timer::from_millis(16) }
     }
+
+    pub fn is_exploding(&self) -> bool { self.exploding }
 
     pub fn update(&mut self, delta: Duration) {
         self.timer.update(delta);
         if self.timer.ready && !self.exploding {
-            if self.row > 0 {
-                self.row -= 1;
+            if self.position.row > 0 {
+                self.position.row -= 1;
             }
             self.timer.reset();
         }
@@ -33,8 +39,8 @@ impl Shot {
         }
     }
 
-    pub fn dead(&self) -> bool {
-        (self.exploding && self.timer.ready) || self.row == 0
+    pub fn is_dead(&self) -> bool {
+        (self.exploding && self.timer.ready) || self.position.row == 0
     }
 }
 
