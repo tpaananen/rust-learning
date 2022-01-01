@@ -11,7 +11,7 @@ pub struct Shot {
 impl Discoverable for Shot {
     fn get_col(&self) -> usize { self.position.col }
     fn get_row(&self) -> usize { self.position.row }
-    fn show(&self) -> &'static str { if self.exploding { "*" } else { "|" }}
+    fn show(&self) -> char { if self.exploding { '*' } else { '|' }}
 }
 
 impl Shot {

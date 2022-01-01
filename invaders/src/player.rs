@@ -51,24 +51,24 @@ impl Player {
         self.shots.retain(|shot| !shot.is_dead());
     }
 
-    pub fn detect_hits(&mut self, invaders: &mut Invaders) -> bool {
-        let mut hit = false;
+    pub fn detect_hits(&mut self, invaders: &mut Invaders) -> usize {
+        let mut count = 0;
         for shot in self.shots.iter_mut() {
             if !shot.is_exploding() {
                 if invaders.kill_invader_at(shot) {
-                    hit = true;
+                    count += 1;
                     shot.explode();
                 }
             }
         }
-        hit
+        count
     }
 }
 
 impl Discoverable for Player {
     fn get_col(&self) -> usize { self.position.col }
     fn get_row(&self) -> usize { self.position.row }
-    fn show(&self) -> &'static str { "A" }
+    fn show(&self) -> char { 'A' }
 }
 
 impl Drawable for Player {

@@ -1,6 +1,6 @@
 use std::{time::{Duration, Instant}, sync::mpsc::Sender, thread};
 use crossterm::event::{self, Event};
-use crate::{sounds::GameAudio, frame::{Frame, Drawable}, player::Player, invaders::Invaders};
+use crate::{sounds::GameAudio, frame::{Frame, Drawable}, player::Player, invaders::Invaders, score::Score};
 
 pub fn game_loop(
     audio: &mut GameAudio,
@@ -12,6 +12,7 @@ pub fn game_loop(
     let mut instant = Instant::now();
     let mut player = Player::new(num_rows, num_columns, num_shots);
     let mut invaders = Invaders::new(num_rows, num_columns);
+    let mut score = Score::new(invaders.count());
 
     'gameloop: loop {
 
@@ -30,13 +31,16 @@ pub fn game_loop(
             audio.play_moving();
         }
 
-        if player.detect_hits(&mut invaders) {
+        let count_hits = player.detect_hits(&mut invaders);
+        if count_hits > 0 {
+            score.increment(count_hits);
             audio.play_explode();
         }
 
         // Draw & render
         player.draw(&mut curr_frame);
         invaders.draw(&mut curr_frame);
+        score.draw(&mut curr_frame);
 
         let _ = render_tx.send(curr_frame);
         thread::sleep(Duration::from_millis(1));

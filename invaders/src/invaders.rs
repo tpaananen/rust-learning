@@ -10,13 +10,13 @@ enum Direction {
 
 pub struct Invader {
     position: Position,
-    how_i_look: &'static str
+    how_i_look: char
 }
 
 impl Discoverable for Invader {
     fn get_col(&self) -> usize { self.position.col }
     fn get_row(&self) -> usize { self.position.row }
-    fn show(&self) -> &'static str { self.how_i_look }
+    fn show(&self) -> char { self.how_i_look }
 }
 
 pub struct Invaders {
@@ -34,7 +34,7 @@ impl Invaders {
         for col in 0..num_columns {
             for row in 0..num_rows {
                 if (col > 1) && (col < num_columns - 2) && (row > 0) && (row < num_rows / 2) && (col % 2 == 0) && (row % 2 == 0) {
-                    army.push(Invader { position: Position { col, row }, how_i_look: "x" });
+                    army.push(Invader { position: Position { col, row }, how_i_look: 'X' });
                 }
             }
         }
@@ -98,7 +98,7 @@ impl Invaders {
     fn update_invader_look(&mut self) {
         for invader in self.army.iter_mut() {
             let value = self.move_timer.time_left.as_secs_f32() / self.move_timer.duration.as_secs_f32();
-            let look = if value > 0.5 { "x" } else { "+" };
+            let look = if value > 0.5 { 'X' } else { '+' };
             invader.how_i_look = look;
         }
     }
@@ -119,6 +119,10 @@ impl Invaders {
             }
         }
         false
+    }
+
+    pub fn count(&self) -> usize {
+        self.army.len()
     }
 }
 
