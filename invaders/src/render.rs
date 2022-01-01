@@ -13,16 +13,13 @@ fn render(stdout: &mut Stdout, last_frame: &Frame, curr_frame: &Frame, force: bo
         stdout.queue(SetBackgroundColor(Color::Black)).unwrap();
     }
 
-    // Frame vector consists of column vectors
-    for (col_index, col) in curr_frame.iter().enumerate() {
-        for (row_index, &current_value) in col.iter().enumerate() {
-            let previous_value = last_frame[col_index][row_index];
-            if current_value != previous_value || force {
-                stdout.queue(MoveTo(col_index as u16, row_index as u16)).unwrap();
-                println!("{}", current_value)
-            }
+    curr_frame.updade_each_cell(stdout, |col_index, row_index, current_value, stdout| {
+        let previous_value = last_frame.get_value_at(col_index, row_index);
+        if current_value != previous_value || force {
+            stdout.queue(MoveTo(col_index as u16, row_index as u16)).unwrap();
+            println!("{}", current_value)
         }
-    }
+    });
 
     stdout.flush().unwrap();
 }

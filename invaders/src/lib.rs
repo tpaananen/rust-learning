@@ -8,4 +8,5 @@ pub mod invaders;
 
 pub const NUM_ROWS: usize = 20;
 pub const NUM_COLS: usize = 40;
-pub const NUM_SHOTS: usize = 10;
+pub const NUM_SHOTS: usize = 5;
+

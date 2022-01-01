@@ -1,40 +1,41 @@
 use std::time::Duration;
 use crate::{
     NUM_COLS, NUM_ROWS, NUM_SHOTS,
-    frame::{Frame, Drawable},
+    frame::{Frame, Drawable, Position, Discoverable},
     shot::Shot, invaders::Invaders
 };
 
 pub struct Player {
-    col: usize,
-    row: usize,
+    position: Position,
     shots: Vec<Shot>,
 }
 
 impl Player {
     pub fn new() -> Self {
         Self {
-            col: NUM_COLS / 2,
-            row: NUM_ROWS - 1,
+            position: Position {
+                col: NUM_COLS / 2,
+                row: NUM_ROWS - 1,
+            },
             shots: Vec::new(),
         }
     }
 
     pub fn move_left(&mut self) {
-        if self.col > 0 {
-            self.col -= 1;
+        if self.position.col > 0 {
+            self.position.col -= 1;
         }
     }
 
     pub fn move_right(&mut self) {
-        if self.col < NUM_COLS - 1 {
-            self.col += 1;
+        if self.position.col < NUM_COLS - 1 {
+            self.position.col += 1;
         }
     }
 
     pub fn shoot(&mut self) -> bool {
         if self.shots.len() < NUM_SHOTS {
-            self.shots.push(Shot::new(self.col, self.row - 1));
+            self.shots.push(Shot::new(self.position.col, self.position.row - 1));
             true
         } else {
             false
@@ -62,9 +63,14 @@ impl Player {
     }
 }
 
+impl Discoverable for Player {
+    fn get_col(&self) -> usize { self.position.col }
+    fn get_row(&self) -> usize { self.position.row }
+}
+
 impl Drawable for Player {
     fn draw(&self, frame: &mut Frame) {
-        frame[self.col][self.row] = "A";
+        frame.set_player(&self);
         for shot in self.shots.iter() {
             shot.draw(frame);
         }
