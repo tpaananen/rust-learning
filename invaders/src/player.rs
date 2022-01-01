@@ -6,6 +6,7 @@ use crate::frame::{Frame, Drawable, Position, Discoverable};
 pub struct Player {
     position: Position,
     shots: Vec<Shot>,
+    num_total_shots_taken: usize,
     num_columns: usize,
     num_shots: usize
 }
@@ -18,6 +19,7 @@ impl Player {
                 row: num_rows - 1,
             },
             shots: Vec::new(),
+            num_total_shots_taken: 0,
             num_columns,
             num_shots
         }
@@ -38,6 +40,7 @@ impl Player {
     pub fn shoot(&mut self) -> bool {
         if self.shots.len() < self.num_shots {
             self.shots.push(Shot::new(self.position.col, self.position.row - 1));
+            self.num_total_shots_taken += 1;
             true
         } else {
             false
@@ -62,6 +65,10 @@ impl Player {
             }
         }
         count
+    }
+
+    pub(crate) fn count_shots(&self) -> usize {
+        self.num_total_shots_taken
     }
 }
 

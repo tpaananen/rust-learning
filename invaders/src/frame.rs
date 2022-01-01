@@ -29,9 +29,9 @@ impl Frame {
         self.frame.set(drawable.get_row(), drawable.get_col(), drawable.show()).unwrap();
     }
 
-    pub fn update_row(&mut self, row: usize, val: &String) {
+    pub fn update_top_row(&mut self, val: &String) {
         for (col, c) in val.chars().enumerate() {
-            self.frame.set(row, col, c).unwrap();
+            self.frame.set(0, col, c).unwrap();
         }
     }
 

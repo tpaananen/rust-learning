@@ -33,9 +33,10 @@ pub fn game_loop(
 
         let count_hits = player.detect_hits(&mut invaders);
         if count_hits > 0 {
-            score.increment(count_hits);
+            score.increment_progress(count_hits);
             audio.play_explode();
         }
+        score.update_shots(player.count_shots());
 
         // Draw & render
         player.draw(&mut curr_frame);
