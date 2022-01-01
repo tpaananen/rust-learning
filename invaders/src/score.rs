@@ -17,7 +17,7 @@ impl Score {
 
 impl Drawable for Score {
     fn draw(&self, frame: &mut Frame) {
-        let formatted = format!("SCORE: {:0>2} / {:0>2}", self.count, self.invaders_count);
-        frame.update_row(0, &formatted);
+        let percentage: f32 = self.count as f32 / self.invaders_count as f32 * 100.0;
+        frame.update_row(0, &format!("COMPLETION: {:.2} %", percentage));
     }
 }
