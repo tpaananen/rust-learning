@@ -1,5 +1,9 @@
 # Invaders by Nathan Stocks
 
-<https://www.udemy.com/course/ultimate-rust-crash-course/>
+Invaders game based on Nathan Stocks rust course on Udemy.
+Refactored by me where something new could be learned.
 
-<https://github.com/CleanCut/invaders>
+- You can find the course and original source from:
+
+  - [Udemy course](https://www.udemy.com/course/ultimate-rust-crash-course)
+  - [Source](https://github.com/CleanCut/invaders)
