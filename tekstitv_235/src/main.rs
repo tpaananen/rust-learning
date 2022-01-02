@@ -14,8 +14,16 @@ async fn main() {
     }
 
     let mut games_on_going: Vec<String> = Vec::new();
-    read_pages(&pages, &mut games_on_going);
-    println!("Lennän seuraavaksi: {}", &find_target(&games_on_going));
+    read_and_print_pages(&pages, &mut games_on_going);
+
+    println!();
+    println!("================================================================");
+    println!();
+    println!("> Lennän seuraavaksi: {}", &find_target(&games_on_going));
+    println!();
+    println!("================================================================");
+    println!();
+
 }
 
 async fn fetch_pages() -> Vec<String> {
@@ -57,7 +65,7 @@ fn find_target(games: &Vec<String>) -> String {
     teams.first().unwrap_or(&MESSAGE.to_string()).trim().to_string()
 }
 
-fn read_pages(pages: &Vec<String>, is_on_going: &mut Vec<String>) {
+fn read_and_print_pages(pages: &Vec<String>, is_on_going: &mut Vec<String>) {
     let regex_on_going_matches = Regex::new(r"[0-9]+-[0-9]+$").unwrap();
     let regex_on_going_matches_by_time = Regex::new(r"^[0-9]{2}.[0-9]{2}").unwrap();
     let selector = Selector::parse(".boxbox > pre").unwrap();
@@ -71,22 +79,36 @@ fn read_pages(pages: &Vec<String>, is_on_going: &mut Vec<String>) {
                 let mut previous = "";
                 token
                     .split("\n")
-                    .filter(|token| { token.trim().len() > 0 && (regex_on_going_matches_by_time.is_match(token) || token.contains(" - ")) })
+                    .filter(|token| { !is_empty_or_whitespace(token) && !token.contains("NHL-") })
                     .for_each(|token| {
                         let was_previous_by_time = regex_on_going_matches_by_time.is_match(previous);
-                        if regex_on_going_matches.is_match(token) && was_previous_by_time {
-                            let mut value = String::from(token);
+                        let is_on_going_or_end = regex_on_going_matches.is_match(token);
+                        if is_on_going_or_end && !was_previous_by_time {
+                            println!("");
+                        }
+
+                        if is_on_going_or_end && was_previous_by_time {
+                            let mut value = String::from(token.trim());
                             value.push_str(" << käynnissä");
                             if was_previous_by_time {
-                                println!("{}", &previous);
+                                println!();
+                                println!("{}", &previous.trim());
                             }
                             println!("{}", &value);
                             is_on_going.push(value);
                         } else if !regex_on_going_matches_by_time.is_match(token) {
-                            println!("{}", &token);
+                            if is_on_going_or_end {
+                                println!("{}", token.trim());
+                            } else {
+                                println!("{}", &token);
+                            }
                         }
                         previous = token;
                     });
             });
     }
+}
+
+fn is_empty_or_whitespace(token: &str) -> bool {
+    token.is_empty() || token.chars().all(|c| c.is_whitespace())
 }
