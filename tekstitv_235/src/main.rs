@@ -5,6 +5,9 @@ use scraper::{Html, Selector};
 use colored::*;
 
 const MESSAGE: &'static str = "Jäämiehet varmaan hommissa...";
+const COL_WIDTH: usize = 18;
+
+// TODO: next step is to refactor this monster into structs and separated implementations
 
 #[tokio::main]
 async fn main() {
@@ -40,9 +43,7 @@ async fn fetch_pages() -> Vec<String> {
     loop {
         let url_str = format!("https://yle.fi/tekstitv/txt/235_{:0>4}.htm", index);
         let url = Url::parse(&url_str).unwrap();
-        let res = reqwest::get(url)
-            .await
-            .unwrap();
+        let res = reqwest::get(url).await.expect("Failed to load results from YLE web site");
 
         if !res.status().is_success() {
             break;
@@ -52,9 +53,10 @@ async fn fetch_pages() -> Vec<String> {
             .await
             .unwrap_or("".to_string());
 
-        if html.len() == 0 {
+        if html.is_empty() {
             break;
         }
+
         pages.push(html);
         index += 1;
     }
@@ -62,7 +64,7 @@ async fn fetch_pages() -> Vec<String> {
 }
 
 fn find_target(games: &Vec<String>) -> String {
-    if games.len() == 0 {
+    if games.is_empty() {
         return MESSAGE.to_string();
     }
 
@@ -149,8 +151,6 @@ fn process_game_result_row_when_end(line: &str) {
     }
 }
 
-// TODO: next step is to refactor this monster into structs and separated implementations
-
 fn process_goal_scorer_row(
     regex_overtime_goal_home: &Regex,
     regex_overtime_goal_away: &Regex,
@@ -191,24 +191,23 @@ fn process_goal_scorer_row(
     } else {
         if !is_finnish_assistant(line) {
             println!("{}", line.bright_cyan());
-        } else {
+        } else if line.len() > 2 {
             let home_assistant = regex_assistant_home.is_match(line);
 
-            let away_part = &line[3..];
+            let away_part = &line[2..];
             let away_assistant = regex_assistant_away.is_match(away_part);
-
 
             if home_assistant {
                 let end_pos = regex_assistant_home.find(line).unwrap().end();
-                print!("{}", format!("{:width$}", line[..end_pos].bright_green(), width=18));
+                print!("{}", format!("{:width$}", line[..end_pos].bright_green(), width=COL_WIDTH));
             } else {
                 let end_pos = regex_assistant_away.find(away_part).unwrap().start();
-                print!("{}", line[..end_pos + 3].bright_cyan());
+                print!("{}", line[..end_pos + 2].bright_cyan());
             }
 
             if away_assistant {
                 let start_pos = regex_assistant_away.find(away_part).unwrap().start();
-                println!("{}", line[start_pos + 3..].bright_green());
+                println!("{}", line[start_pos + 2..].bright_green());
             } else {
                 let start_pos = regex_assistant_home.find(line).unwrap().end();
                 println!("{}", line[start_pos..].bright_cyan());
