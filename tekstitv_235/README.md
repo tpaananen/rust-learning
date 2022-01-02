@@ -10,9 +10,7 @@ Randomly gets the next match to watch from the games that are currently on going
 
 > |>cargo run
 
-```text
-TODO: update output when next games are available
-```
+![alt text](sample_not_started.png "Output when no games have started yet")
 
 ### Output when some games are on going
 
