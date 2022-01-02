@@ -13,17 +13,15 @@ const COL_WIDTH: usize = 18;
 async fn main() {
     let pages = fetch_pages().await;
     if pages.len() == 0 {
-        println!("{}", MESSAGE);
+        print_selected_target(&MESSAGE);
         return;
     }
 
-    println!();
     let games_on_going = read_and_print_pages(&pages);
     print_selected_target(&find_target(&games_on_going));
 }
 
 fn print_selected_target(target: &str) {
-    println!();
     println!("{}", "================================================================".bright_blue());
     println!();
     println!("{} {}", "> Lennän seuraavaksi:".bright_blue(), target);
@@ -37,9 +35,9 @@ async fn fetch_pages() -> Vec<String> {
     let mut pages: Vec<String> = Vec::new();
 
     // for some testing
-    // let contents = std::fs::read_to_string("./assets/sivu0001.htm")
-    //     .expect("Something went wrong reading the file");
-    // pages.push(contents);
+    let contents = std::fs::read_to_string("./assets/sivu0001.htm")
+        .expect("Something went wrong reading the file");
+    pages.push(contents);
 
     loop {
         let url_str = format!("https://yle.fi/tekstitv/txt/235_{:0>4}.htm", index);
@@ -89,6 +87,7 @@ fn read_and_print_pages(pages: &Vec<String>) -> Vec<String> {
     let mut games_on_going: Vec<String> = Vec::new();
 
     for page in pages {
+        println!();
         let mut previous = "".to_owned();
         let document = Html::parse_document(&page);
         let lines = document
@@ -198,28 +197,26 @@ fn process_goal_scorer_row(
         }
     // if no overtime, check if line has finnish assists, marked with (Name) -> green
     } else {
+        // cannot detect finnish goal scorers ... well assists are for assistants, so lets get'em
         if !is_finnish_assistant(line) {
             println!("{}", line.bright_cyan());
-        } else if line.len() > 2 {
-            let home_assistant = regex_assistant_home.is_match(line);
-
-            let away_part = &line[2..];
-            let away_assistant = regex_assistant_away.is_match(away_part);
-
-            if home_assistant {
+        } else {
+            if regex_assistant_home.is_match(line) {
                 let end_pos = regex_assistant_home.find(line).unwrap().end();
                 print!("{}", format!("{:width$}", line[..end_pos].bright_green(), width=COL_WIDTH));
             } else {
-                let end_pos = regex_assistant_away.find(away_part).unwrap().start();
-                print!("{}", line[..end_pos + 2].bright_cyan());
+                print!("{}", line[..COL_WIDTH].bright_cyan());
             }
 
-            if away_assistant {
-                let start_pos = regex_assistant_away.find(away_part).unwrap().start();
-                println!("{}", line[start_pos + 2..].bright_green());
-            } else {
-                let start_pos = regex_assistant_home.find(line).unwrap().end();
-                println!("{}", line[start_pos..].bright_cyan());
+            if line.len() >= COL_WIDTH {
+                let away_part = &line[COL_WIDTH..];
+                let away_assistant = regex_assistant_away.is_match(away_part);
+
+                if away_assistant {
+                    println!("{}", away_part.bright_green());
+                } else {
+                    println!("{}", away_part.bright_cyan());
+                }
             }
         }
     }
