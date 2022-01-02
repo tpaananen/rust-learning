@@ -22,6 +22,7 @@ async fn main() {
 }
 
 fn print_selected_target(target: &str) {
+    println!();
     println!("{}", "================================================================".bright_blue());
     println!();
     println!("{} {}", "> Lennän seuraavaksi:".bright_blue(), target);
@@ -87,7 +88,6 @@ fn read_and_print_pages(pages: &Vec<String>) -> Vec<String> {
     let mut games_on_going: Vec<String> = Vec::new();
 
     for page in pages {
-        println!();
         let mut previous = "".to_owned();
         let document = Html::parse_document(&page);
         let lines = document
