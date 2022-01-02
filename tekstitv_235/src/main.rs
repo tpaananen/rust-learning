@@ -178,7 +178,7 @@ fn process_goal_scorer_row(
         if line.len() > end_pos + 1 {
             let token = &line[end_pos..];
             let is_assistant = is_finnish_assistant(token);
-            println!("{} 1", if is_assistant { token.bright_green() } else { token.bright_cyan() });
+            println!("{}", if is_assistant { token.bright_green() } else { token.bright_cyan() });
         } else {
             println!();
         }
@@ -187,7 +187,7 @@ fn process_goal_scorer_row(
         let start_pos = regex_overtime_goal_away.find(line).unwrap().start();
         let token = &line[..start_pos];
         let is_assistant = is_finnish_assistant(token);
-        print!("{} 2", if is_assistant { token.bright_green() } else { token.bright_cyan() });
+        print!("{}", if is_assistant { token.bright_green() } else { token.bright_cyan() });
 
         if line.len() > start_pos + 1 {
             let token = &line[start_pos..];
@@ -199,7 +199,7 @@ fn process_goal_scorer_row(
     // if no overtime, check if line has finnish assists, marked with (Name) -> green
     } else {
         if !is_finnish_assistant(line) {
-            println!("{} 3", line.bright_cyan());
+            println!("{}", line.bright_cyan());
         } else if line.len() > 2 {
             let home_assistant = regex_assistant_home.is_match(line);
 
@@ -211,7 +211,7 @@ fn process_goal_scorer_row(
                 print!("{}", format!("{:width$}", line[..end_pos].bright_green(), width=COL_WIDTH));
             } else {
                 let end_pos = regex_assistant_away.find(away_part).unwrap().start();
-                print!("{} 4", line[..end_pos + 2].bright_cyan());
+                print!("{}", line[..end_pos + 2].bright_cyan());
             }
 
             if away_assistant {
@@ -219,7 +219,7 @@ fn process_goal_scorer_row(
                 println!("{}", line[start_pos + 2..].bright_green());
             } else {
                 let start_pos = regex_assistant_home.find(line).unwrap().end();
-                println!("{} 5", line[start_pos..].bright_cyan());
+                println!("{}", line[start_pos..].bright_cyan());
             }
         }
     }
