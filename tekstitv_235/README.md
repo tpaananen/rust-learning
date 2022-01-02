@@ -22,9 +22,7 @@ Randomly gets the next match to watch from the games that are currently on going
 
 > |>cargo run
 
-```text
-TODO: update output when next games are available
-```
+![alt text](sample_on_going.png "Output when some games are on going")
 
 ### Output when all the games for the day have finished
 
