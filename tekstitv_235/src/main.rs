@@ -35,9 +35,9 @@ async fn fetch_pages() -> Vec<String> {
     let mut pages: Vec<String> = Vec::new();
 
     // for some testing
-    // let contents = std::fs::read_to_string("./assets/sivu0001.htm")
-    //     .expect("Something went wrong reading the file");
-    // pages.push(contents);
+    //let contents = std::fs::read_to_string("./assets/sivu0001.htm")
+    //    .expect("Something went wrong reading the file");
+    //pages.push(contents);
 
     loop {
         let url_str = format!("https://yle.fi/tekstitv/txt/235_{:0>4}.htm", index);
@@ -97,9 +97,9 @@ fn read_and_print_pages(pages: &Vec<String>) -> Vec<String> {
 
         for line in lines {
             if regex_not_started_by_time.is_match(line) {
-                println!("{}", line.trim());
                 println!();
-                previous = line.to_owned();
+                println!("{}", line.trim());
+                previous = line.trim().to_owned();
                 continue;
             }
 
@@ -109,13 +109,14 @@ fn read_and_print_pages(pages: &Vec<String>) -> Vec<String> {
                 println!();
             }
 
+            let trimmed = line.trim();
             if is_on_going_or_end && was_previous_by_time {
-                let current = String::from(line.trim());
+                let current = String::from(trimmed);
                 print_on_going_result_row(&previous, &current);
                 games_on_going.push(current);
-            } else if !regex_on_going_matches_by_time.is_match(line) {
+            } else if !regex_on_going_matches_by_time.is_match(trimmed) {
                 if is_on_going_or_end {
-                    process_game_result_row_when_end(line.trim());
+                    process_game_result_row_when_end(trimmed);
                 } else {
                     process_goal_scorer_row(
                         &regex_overtime_goal_home,
@@ -125,7 +126,7 @@ fn read_and_print_pages(pages: &Vec<String>) -> Vec<String> {
                         &line);
                 }
             }
-            previous = line.to_owned();
+            previous = line.trim().to_owned();
         }
     }
     games_on_going
@@ -133,7 +134,7 @@ fn read_and_print_pages(pages: &Vec<String>) -> Vec<String> {
 
 fn print_on_going_result_row(previous: &str, current: &str) {
     println!();
-    println!("{}", previous.trim());
+    println!("{}", previous.trim().bright_cyan());
     print!("{}", current.bright_yellow());
     println!("{}", " <<< käynnissä".bright_yellow());
 }
