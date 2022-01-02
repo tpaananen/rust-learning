@@ -84,16 +84,14 @@ fn read_and_print_pages(pages: &Vec<String>, is_on_going: &mut Vec<String>) {
                         let was_previous_by_time = regex_on_going_matches_by_time.is_match(previous);
                         let is_on_going_or_end = regex_on_going_matches.is_match(token);
                         if is_on_going_or_end && !was_previous_by_time {
-                            println!("");
+                            println!();
                         }
 
                         if is_on_going_or_end && was_previous_by_time {
                             let mut value = String::from(token.trim());
                             value.push_str(" << käynnissä");
-                            if was_previous_by_time {
-                                println!();
-                                println!("{}", &previous.trim());
-                            }
+                            println!();
+                            println!("{}", previous.trim());
                             println!("{}", &value);
                             is_on_going.push(value);
                         } else if !regex_on_going_matches_by_time.is_match(token) {
