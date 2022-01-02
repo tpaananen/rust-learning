@@ -33,9 +33,9 @@ async fn fetch_pages() -> Vec<String> {
     let mut pages: Vec<String> = Vec::new();
 
     // for some testing
-    let contents = std::fs::read_to_string("./assets/sivu0001.htm")
-        .expect("Something went wrong reading the file");
-    pages.push(contents);
+    // let contents = std::fs::read_to_string("./assets/sivu0001.htm")
+    //     .expect("Something went wrong reading the file");
+    // pages.push(contents);
 
     loop {
         let url_str = format!("https://yle.fi/tekstitv/txt/235_{:0>4}.htm", index);
