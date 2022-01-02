@@ -33,9 +33,9 @@ async fn fetch_pages() -> Vec<String> {
     let mut pages: Vec<String> = Vec::new();
 
     // for some testing
-    // let contents = std::fs::read_to_string("./assets/sivu0001.htm")
-    //     .expect("Something went wrong reading the file");
-    // pages.push(contents);
+    let contents = std::fs::read_to_string("./assets/sivu0001.htm")
+        .expect("Something went wrong reading the file");
+    pages.push(contents);
 
     loop {
         let url_str = format!("https://yle.fi/tekstitv/txt/235_{:0>4}.htm", index);
@@ -78,6 +78,8 @@ fn read_and_print_pages(pages: &Vec<String>) -> Vec<String> {
     let regex_on_going_matches_by_time = Regex::new(r"^[0-9]{2}.[0-9]{2}").unwrap();
     let regex_overtime_goal_home = Regex::new(r"^(\s){1}(\S)+(\s)+([6]{1}[0-5]{1})").unwrap();
     let regex_overtime_goal_away = Regex::new(r"(\s){1}(\S)+(\s)+([6]{1}[0-5]{1})").unwrap();
+    let regex_assistant_home = Regex::new(r"^[(\s)]{1}[(]{1}[(\S)]+[)]{1}").unwrap();
+    let regex_assistant_away = Regex::new(r"[(]{1}[(\S)]+[)]{1}[\s]?$").unwrap();
     let selector = Selector::parse(".boxbox > pre").unwrap();
 
     let mut games_on_going: Vec<String> = Vec::new();
@@ -105,7 +107,12 @@ fn read_and_print_pages(pages: &Vec<String>) -> Vec<String> {
                 if is_on_going_or_end {
                     process_game_result_row_when_end(line.trim());
                 } else {
-                    process_goal_scorer_row(&regex_overtime_goal_home, &regex_overtime_goal_away, &line);
+                    process_goal_scorer_row(
+                        &regex_overtime_goal_home,
+                        &regex_overtime_goal_away,
+                        &regex_assistant_home,
+                        &regex_assistant_away,
+                        &line);
                 }
             }
             previous = line.to_owned();
@@ -142,26 +149,76 @@ fn process_game_result_row_when_end(line: &str) {
     }
 }
 
-fn process_goal_scorer_row(regex_overtime_goal_home: &Regex, regex_overtime_goal_away: &Regex, line: &str) {
+// TODO: next step is to refactor this monster into structs and separated implementations
+
+fn process_goal_scorer_row(
+    regex_overtime_goal_home: &Regex,
+    regex_overtime_goal_away: &Regex,
+    regex_assistant_home: &Regex,
+    regex_assistant_away: &Regex,
+    line: &str) {
+
+    // check if home team had overtime goal
     if regex_overtime_goal_home.is_match(line) {
         let end_pos = regex_overtime_goal_home.find(line).unwrap().end();
-        print!("{}", line[..end_pos].bright_magenta());
+
+        let token = &line[..end_pos];
+        let is_assistant = is_finnish_assistant(&token);
+        print!("{}", if is_assistant { token.bright_green() } else { token.bright_magenta() });
+
         if line.len() > end_pos + 1 {
-            println!("{}", line[end_pos..].bright_cyan());
+            let token = &line[end_pos..];
+            let is_assistant = is_finnish_assistant(token);
+            println!("{}", if is_assistant { token.bright_green() } else { token.bright_cyan() });
         } else {
             println!();
         }
+    // check if away team had overtime goal
     } else if regex_overtime_goal_away.is_match(line) {
         let start_pos = regex_overtime_goal_away.find(line).unwrap().start();
-        print!("{}", line[..start_pos].bright_cyan());
+        let token = &line[..start_pos];
+        let is_assistant = is_finnish_assistant(token);
+        print!("{}", if is_assistant { token.bright_green() } else { token.bright_cyan() });
+
         if line.len() > start_pos + 1 {
-            println!("{}", line[start_pos..].bright_magenta());
+            let token = &line[start_pos..];
+            let is_assistant = is_finnish_assistant(token);
+            println!("{}", if is_assistant { token.bright_green() } else { token.bright_magenta() });
         } else {
             println!();
         }
+    // if no overtime, check if line has finnish assists, marked with (Name) -> green
     } else {
-        println!("{}", line.bright_cyan());
+        if !is_finnish_assistant(line) {
+            println!("{}", line.bright_cyan());
+        } else {
+            let home_assistant = regex_assistant_home.is_match(line);
+
+            let away_part = &line[3..];
+            let away_assistant = regex_assistant_away.is_match(away_part);
+
+
+            if home_assistant {
+                let end_pos = regex_assistant_home.find(line).unwrap().end();
+                print!("{}", format!("{:width$}", line[..end_pos].bright_green(), width=18));
+            } else {
+                let end_pos = regex_assistant_away.find(away_part).unwrap().start();
+                print!("{}", line[..end_pos + 3].bright_cyan());
+            }
+
+            if away_assistant {
+                let start_pos = regex_assistant_away.find(away_part).unwrap().start();
+                println!("{}", line[start_pos + 3..].bright_green());
+            } else {
+                let start_pos = regex_assistant_home.find(line).unwrap().end();
+                println!("{}", line[start_pos..].bright_cyan());
+            }
+        }
     }
+}
+
+fn is_finnish_assistant(token: &str) -> bool {
+    token.contains("(")
 }
 
 fn is_empty_or_whitespace(line: &str) -> bool {
