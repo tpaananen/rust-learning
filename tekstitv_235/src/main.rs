@@ -80,34 +80,36 @@ fn read_and_print_pages(pages: &Vec<String>) -> Vec<String> {
     let regex_overtime_goal_away = Regex::new(r"(\s){1}(\S)+(\s)+([6]{1}[0-5]{1})").unwrap();
     let selector = Selector::parse(".boxbox > pre").unwrap();
 
-    let mut previous = "".to_owned();
     let mut games_on_going: Vec<String> = Vec::new();
 
     for page in pages {
-        Html::parse_document(&page)
+        let mut previous = "".to_owned();
+        let document = Html::parse_document(&page);
+        let lines = document
             .select(&selector)
             .flat_map(|element| { element.text().flat_map(|text| { text.lines() })})
-            .filter(|line| { !is_empty_or_whitespace(line) && !line.contains("NHL-") })
-            .for_each(|line| {
-                let was_previous_by_time = regex_on_going_matches_by_time.is_match(&previous);
-                let is_on_going_or_end = regex_on_going_matches.is_match(line);
-                if is_on_going_or_end && !was_previous_by_time {
-                    println!();
-                }
+            .filter(|line| { !is_empty_or_whitespace(line) && !line.contains("NHL-") });
 
-                if is_on_going_or_end && was_previous_by_time {
-                    let current = String::from(line.trim());
-                    print_on_going_result_row(&previous, &current);
-                    games_on_going.push(current);
-                } else if !regex_on_going_matches_by_time.is_match(line) {
-                    if is_on_going_or_end {
-                        process_game_result_row_when_end(line.trim());
-                    } else {
-                        process_goal_scorer_row(&regex_overtime_goal_home, &regex_overtime_goal_away, &line);
-                    }
+        for line in lines {
+            let was_previous_by_time = regex_on_going_matches_by_time.is_match(&previous);
+            let is_on_going_or_end = regex_on_going_matches.is_match(line);
+            if is_on_going_or_end && !was_previous_by_time {
+                println!();
+            }
+
+            if is_on_going_or_end && was_previous_by_time {
+                let current = String::from(line.trim());
+                print_on_going_result_row(&previous, &current);
+                games_on_going.push(current);
+            } else if !regex_on_going_matches_by_time.is_match(line) {
+                if is_on_going_or_end {
+                    process_game_result_row_when_end(line.trim());
+                } else {
+                    process_goal_scorer_row(&regex_overtime_goal_home, &regex_overtime_goal_away, &line);
                 }
-                previous = line.to_owned();
-            });
+            }
+            previous = line.to_owned();
+        }
     }
     games_on_going
 }
