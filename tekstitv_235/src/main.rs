@@ -17,6 +17,7 @@ async fn main() {
         return;
     }
 
+    println!();
     let games_on_going = read_and_print_pages(&pages);
     print_selected_target(&find_target(&games_on_going));
 }
@@ -98,6 +99,7 @@ fn read_and_print_pages(pages: &Vec<String>) -> Vec<String> {
         for line in lines {
             if regex_not_started_by_time.is_match(line) {
                 println!("{}", line.trim());
+                println!();
                 previous = line.to_owned();
                 continue;
             }
