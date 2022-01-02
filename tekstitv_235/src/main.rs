@@ -78,6 +78,7 @@ fn find_target(games: &Vec<String>) -> String {
 fn read_and_print_pages(pages: &Vec<String>) -> Vec<String> {
     let regex_on_going_matches = Regex::new(r"[0-9]+-[0-9]+$").unwrap();
     let regex_on_going_matches_by_time = Regex::new(r"^[0-9]{2}.[0-9]{2}").unwrap();
+    let regex_not_started_by_time = Regex::new(r"[0-9]{2}.[0-9]{2}$").unwrap();
     let regex_overtime_goal_home = Regex::new(r"^(\s){1}(\S)+(\s)+([6]{1}[0-5]{1})").unwrap();
     let regex_overtime_goal_away = Regex::new(r"(\s){1}(\S)+(\s)+([6]{1}[0-5]{1})").unwrap();
     let regex_assistant_home = Regex::new(r"^[(\s)]{1}[(]{1}[(\S)]+[)]{1}").unwrap();
@@ -95,6 +96,12 @@ fn read_and_print_pages(pages: &Vec<String>) -> Vec<String> {
             .filter(|line| { !is_empty_or_whitespace(line) && !line.contains("NHL-") });
 
         for line in lines {
+            if regex_not_started_by_time.is_match(line) {
+                println!("{}", line.trim());
+                previous = line.to_owned();
+                continue;
+            }
+
             let was_previous_by_time = regex_on_going_matches_by_time.is_match(&previous);
             let is_on_going_or_end = regex_on_going_matches.is_match(line);
             if is_on_going_or_end && !was_previous_by_time {
@@ -169,7 +176,7 @@ fn process_goal_scorer_row(
         if line.len() > end_pos + 1 {
             let token = &line[end_pos..];
             let is_assistant = is_finnish_assistant(token);
-            println!("{}", if is_assistant { token.bright_green() } else { token.bright_cyan() });
+            println!("{} 1", if is_assistant { token.bright_green() } else { token.bright_cyan() });
         } else {
             println!();
         }
@@ -178,7 +185,7 @@ fn process_goal_scorer_row(
         let start_pos = regex_overtime_goal_away.find(line).unwrap().start();
         let token = &line[..start_pos];
         let is_assistant = is_finnish_assistant(token);
-        print!("{}", if is_assistant { token.bright_green() } else { token.bright_cyan() });
+        print!("{} 2", if is_assistant { token.bright_green() } else { token.bright_cyan() });
 
         if line.len() > start_pos + 1 {
             let token = &line[start_pos..];
@@ -190,7 +197,7 @@ fn process_goal_scorer_row(
     // if no overtime, check if line has finnish assists, marked with (Name) -> green
     } else {
         if !is_finnish_assistant(line) {
-            println!("{}", line.bright_cyan());
+            println!("{} 3", line.bright_cyan());
         } else if line.len() > 2 {
             let home_assistant = regex_assistant_home.is_match(line);
 
@@ -202,7 +209,7 @@ fn process_goal_scorer_row(
                 print!("{}", format!("{:width$}", line[..end_pos].bright_green(), width=COL_WIDTH));
             } else {
                 let end_pos = regex_assistant_away.find(away_part).unwrap().start();
-                print!("{}", line[..end_pos + 2].bright_cyan());
+                print!("{} 4", line[..end_pos + 2].bright_cyan());
             }
 
             if away_assistant {
@@ -210,7 +217,7 @@ fn process_goal_scorer_row(
                 println!("{}", line[start_pos + 2..].bright_green());
             } else {
                 let start_pos = regex_assistant_home.find(line).unwrap().end();
-                println!("{}", line[start_pos..].bright_cyan());
+                println!("{} 5", line[start_pos..].bright_cyan());
             }
         }
     }
