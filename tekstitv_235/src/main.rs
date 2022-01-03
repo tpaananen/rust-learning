@@ -203,15 +203,15 @@ fn process_goal_scorer_row(
             println!("{}", line.bright_cyan());
         } else {
             if regex_assistant_home.is_match(line) {
-                let end_pos = regex_assistant_home.find(line).unwrap().end();
-                print!("{}", format!("{:width$}", line[..end_pos].bright_green(), width=COL_WIDTH));
+                let mat = regex_assistant_home.find(&line).unwrap().as_str();
+                print!("{}", format!("{:<width$}", mat.bright_green(), width=COL_WIDTH - 1));
             } else {
-                print!("{}", line[..COL_WIDTH].bright_cyan());
+                print!("{}", format!("{:<width$}", line[..COL_WIDTH - 1].bright_cyan(), width=COL_WIDTH - 1));
             }
 
             if line.len() > COL_WIDTH {
-                let away_part = &line[COL_WIDTH + 1..];
-                let away_assistant = regex_assistant_away.is_match(away_part);
+                let away_part = line.chars().skip(COL_WIDTH - 1).collect::<String>();
+                let away_assistant = regex_assistant_away.is_match(&away_part);
 
                 if away_assistant {
                     println!("{}", away_part.bright_green());
