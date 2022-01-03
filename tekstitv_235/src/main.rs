@@ -209,8 +209,8 @@ fn process_goal_scorer_row(
                 print!("{}", line[..COL_WIDTH].bright_cyan());
             }
 
-            if line.len() >= COL_WIDTH {
-                let away_part = &line[COL_WIDTH..];
+            if line.len() > COL_WIDTH {
+                let away_part = &line[COL_WIDTH + 1..];
                 let away_assistant = regex_assistant_away.is_match(away_part);
 
                 if away_assistant {
@@ -218,6 +218,8 @@ fn process_goal_scorer_row(
                 } else {
                     println!("{}", away_part.bright_cyan());
                 }
+            } else {
+                println!();
             }
         }
     }
