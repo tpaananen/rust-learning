@@ -1,3 +1,5 @@
+use colored::Colorize;
+
 use crate::regex_factory::RegexFactory;
 use super::{
     scorers::Scorers,
@@ -48,7 +50,7 @@ impl Game {
 
     pub fn print(&self) {
         if !self.period_results.is_empty() {
-            println!("{}", &self.period_results);
+            println!("{}", &self.period_results.yellow());
         }
 
         self.teams.print(&self.status);

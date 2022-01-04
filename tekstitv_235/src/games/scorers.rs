@@ -1,22 +1,28 @@
 use colored::Colorize;
 
-use crate::{regex_factory::RegexFactory, constants::{COL_WIDTH_HOME, COL_WIDTH_AWAY}};
+use crate::{regex_factory::RegexFactory, constants::COL_WIDTH_HOME};
 
 struct Scorer {
     name: String,
-    is_assistant: bool
+    is_assistant: bool,
+    is_overtime: bool
 }
 
 impl Scorer {
-    fn new(line: &str) -> Self {
-        Scorer { name: line.to_owned(), is_assistant: line.starts_with("(") }
+    fn new(line: &str, regex_factory: &RegexFactory) -> Self {
+        Scorer {
+            name: line.to_owned(),
+            is_assistant: line.starts_with("("),
+            is_overtime: regex_factory.regex_overtime_goal.is_match(line)
+        }
     }
 
-    fn to_string(&self, width: usize) -> String {
-        // TODO: color -> overtime (magenta)
+    fn to_string(&self) -> String {
         // TODO 2: is finnish goal scorer
         if self.is_assistant {
             format!("{}", self.name.bright_green())
+        } else if self.is_overtime {
+            format!("{}", self.name.bright_magenta())
         } else {
             format!("{}", self.name.bright_cyan())
         }
@@ -35,7 +41,7 @@ impl Scorers {
 
     pub(super) fn print(&self) {
         for (home, away) in &self.scorers {
-            println!(" {} {}", home.to_string(COL_WIDTH_HOME - 1), away.to_string(COL_WIDTH_AWAY - 1));
+            println!(" {} {}", home.to_string(), away.to_string());
         }
     }
 }
@@ -45,7 +51,7 @@ fn parse_scores(lines: &Vec<&str>, regex_factory: &RegexFactory, line_number: &m
     for line in lines.iter().skip(*line_number) {
         let home_scorer: String = line.chars().take(COL_WIDTH_HOME + 1).collect();
         let away_scorer: String = line.chars().skip(COL_WIDTH_HOME + 2).take(COL_WIDTH_HOME + 2).collect();
-        scorers.push((Scorer::new(&home_scorer), Scorer::new(&away_scorer)));
+        scorers.push((Scorer::new(&home_scorer, regex_factory), Scorer::new(&away_scorer, regex_factory)));
     }
     *line_number += scorers.len();
     scorers
