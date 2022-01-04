@@ -18,6 +18,7 @@ impl GameList {
     pub fn print(&self) {
         for game in &self.games {
             game.print();
+            println!();
         }
     }
 

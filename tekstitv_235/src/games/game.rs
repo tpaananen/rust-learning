@@ -54,7 +54,6 @@ impl Game {
 
         self.teams.print(&self.status);
         self.scorers.print();
-        println!();
     }
 }
 
