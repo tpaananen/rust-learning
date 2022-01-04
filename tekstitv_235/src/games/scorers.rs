@@ -50,7 +50,10 @@ fn parse_scores(lines: &Vec<&str>, regex_factory: &RegexFactory, finnish_players
     for line in lines.iter().skip(*line_number) {
         let home_scorer: String = line.chars().take(COL_WIDTH_HOME + 1).collect();
         let away_scorer: String = line.chars().skip(COL_WIDTH_HOME + 2).take(COL_WIDTH_HOME + 2).collect();
-        scorers.push((Scorer::new(&home_scorer, regex_factory, finnish_players), Scorer::new(&away_scorer, regex_factory, finnish_players)));
+        scorers.push((
+            Scorer::new(&home_scorer, regex_factory, finnish_players),
+            Scorer::new(&away_scorer, regex_factory, finnish_players)
+        ));
     }
     *line_number += scorers.len();
     scorers
