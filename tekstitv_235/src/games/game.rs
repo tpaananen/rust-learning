@@ -1,4 +1,8 @@
-use crate::{regex_factory::RegexFactory, games::teams::{Teams, Scorers}};
+use crate::regex_factory::RegexFactory;
+use super::{
+    scorers::Scorers,
+    teams::Teams
+};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 pub enum GameStatus {
@@ -25,17 +29,21 @@ pub struct Game {
 }
 
 impl Game {
-    // we expect lines to be trimmed for us when they were read
     pub fn from_lines(lines: Vec<&str>, regex_factory: &RegexFactory) -> Self {
         let mut line_number: usize = 0;
-        let period_results = Game::parse_period_results(&lines, regex_factory, &mut line_number);
+        let period_results = parse_period_results(&lines, regex_factory, &mut line_number);
         let teams = Teams::from_lines(&lines, &mut line_number);
-        let status = Game::parse_status(&period_results, teams.get_result(), regex_factory);
-        Game { status, period_results, teams, scorers: Scorers::new() }
+        let status = parse_status(&period_results, teams.get_result(), regex_factory);
+        let scorers = Scorers::from_lines(&lines, &regex_factory, &mut line_number);
+        Game { status, period_results, teams, scorers }
     }
 
     pub fn get_home_team_name(&self) -> &str {
         self.teams.get_home_team_name()
+    }
+
+    pub fn get_status(&self) -> GameStatus {
+        self.status
     }
 
     pub fn print(&self) {
@@ -44,28 +52,29 @@ impl Game {
         }
 
         self.teams.print(&self.status);
+        self.scorers.print();
         println!();
     }
+}
 
-    fn parse_period_results(lines: &Vec<&str>, regex_factory: &RegexFactory, line_number: &mut usize) -> String {
-        if lines.len() > 0 {
-            let regx = &regex_factory.regex_on_going_matches_by_time;
-            if regx.is_match(lines[0]) {
-                *line_number = 1;
-                return lines[0].to_owned();
-            }
+fn parse_period_results(lines: &Vec<&str>, regex_factory: &RegexFactory, line_number: &mut usize) -> String {
+    if lines.len() > 0 {
+        let regx = &regex_factory.regex_on_going_matches_by_time;
+        if regx.is_match(lines[0]) {
+            *line_number = 1;
+            return lines[0].to_owned();
         }
-
-        "".to_owned()
     }
 
-    fn parse_status(period_results: &str, result: &str, regex_factory: &RegexFactory) -> GameStatus {
-        if !period_results.is_empty() {
-            GameStatus::Started
-        } else if regex_factory.regex_on_going_matches_by_time.is_match(result) {
-            GameStatus::NotStarted
-        } else {
-            GameStatus::Completed
-        }
+    "".to_owned()
+}
+
+fn parse_status(period_results: &str, result: &str, regex_factory: &RegexFactory) -> GameStatus {
+    if !period_results.is_empty() {
+        GameStatus::Started
+    } else if regex_factory.regex_on_going_matches_by_time.is_match(result) {
+        GameStatus::NotStarted
+    } else {
+        GameStatus::Completed
     }
 }

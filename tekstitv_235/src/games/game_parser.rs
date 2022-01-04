@@ -51,11 +51,12 @@ fn parse_games(pages: &Vec<String>) -> GameList {
 
         let mut game_lines: Vec<&str> = Vec::new();
         for line in lines {
-            if game_lines.len() > 0 && is_empty_or_whitespace(line) {
+            let trimmed_line = line.trim();
+            if game_lines.len() > 0 && is_empty_or_whitespace(trimmed_line) {
                 games.push(Game::from_lines(game_lines, &regex_factory));
                 game_lines = Vec::new();
             } else if !is_empty_or_whitespace(line) {
-                game_lines.push(line);
+                game_lines.push(trimmed_line);
             }
         }
     }

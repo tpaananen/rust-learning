@@ -1,5 +1,6 @@
 use colored::*;
-use crate::games::game_parser::fetch_games;
+use games::game_list::GameList;
+use games::game_parser::fetch_games;
 
 pub mod games;
 pub mod regex_factory;
@@ -10,20 +11,16 @@ const MESSAGE: &'static str = "Jäämiehet varmaan hommissa...";
 
 #[tokio::main]
 async fn main() {
-    println!();
-    let games = fetch_games(true).await;
-    games.print();
-
-    //let games_on_going = read_and_print_pages(&pages);
-    //print_selected_target(&find_target(&games_on_going));
-    print_selected_target(MESSAGE);
+    print(&fetch_games(true).await);
 }
 
-fn print_selected_target(target: &str) {
+fn print(games: &GameList) {
+    println!();
+    games.print();
     println!();
     println!("{}", "================================================================".bright_blue());
     println!();
-    println!("{} {}", "> Lennän seuraavaksi:".bright_blue(), target);
+    println!("{} {}", "> Lennän seuraavaksi:".bright_blue(), &games.get_next_game_to_go());
     println!();
     println!("{}", "================================================================".bright_blue());
     println!();
