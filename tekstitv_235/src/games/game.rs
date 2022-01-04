@@ -1,5 +1,4 @@
 use colored::Colorize;
-
 use crate::regex_factory::RegexFactory;
 use super::{
     scorers::Scorers,
@@ -31,12 +30,12 @@ pub struct Game {
 }
 
 impl Game {
-    pub fn from_lines(lines: Vec<&str>, regex_factory: &RegexFactory) -> Self {
+    pub fn from_lines(lines: Vec<&str>, finnish_players: &Vec<String>, regex_factory: &RegexFactory) -> Self {
         let mut line_number: usize = 0;
         let period_results = parse_period_results(&lines, regex_factory, &mut line_number);
         let teams = Teams::from_lines(&lines, &mut line_number);
         let status = parse_status(&period_results, teams.get_result(), regex_factory);
-        let scorers = Scorers::from_lines(&lines, &regex_factory, &mut line_number);
+        let scorers = Scorers::from_lines(&lines, &regex_factory, finnish_players, &mut line_number);
         Game { status, period_results, teams, scorers }
     }
 

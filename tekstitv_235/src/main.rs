@@ -11,13 +11,13 @@ const MESSAGE: &'static str = "Jäämiehet varmaan hommissa...";
 
 #[tokio::main]
 async fn main() {
-    print(&fetch_games(true).await);
+    let use_mock_data = false;
+    print(&fetch_games(use_mock_data).await);
 }
 
 fn print(games: &GameList) {
     println!();
     games.print();
-    println!();
     println!("{}", "================================================================".bright_blue());
     println!();
     println!("{} {}", "> Lennän seuraavaksi:".bright_blue(), &games.get_next_game_to_go());
