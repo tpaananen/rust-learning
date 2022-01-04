@@ -18,10 +18,10 @@ impl Scorer {
     }
 
     fn to_string(&self) -> String {
-        if self.is_finnish_player {
-            format!("{}{}", self.name.bright_green(), self.time.bright_green())
-        } else if self.is_overtime {
+        if self.is_overtime {
             format!("{}{}", self.name.bright_magenta(), self.time.bright_magenta())
+        } else if self.is_finnish_player {
+            format!("{}{}", self.name.bright_green(), self.time.bright_green())
         } else {
             format!("{}{}", self.name.bright_cyan(), self.time.bright_cyan())
         }
