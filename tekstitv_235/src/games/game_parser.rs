@@ -73,11 +73,21 @@ fn parse_lines(pages: &Vec<String>) -> Vec<String> {
 
     for page in pages {
         let document = Html::parse_document(&page);
-        document
+        let filtering = document
             .select(&selector)
             .flat_map(|element| { element.text().flat_map(|text| { text.lines() })})
-            .filter(|line| { !line.contains("NHL-") })
-            .for_each(|line| { lines.push(line.trim().to_owned()) });
+            .filter(|line| { !line.contains("NHL-") });
+
+        let mut previous_was_empty = false;
+        for line in filtering {
+            let empty = is_empty_or_whitespace(line);
+
+            if previous_was_empty && empty {
+                break;
+            }
+            previous_was_empty = empty;
+            lines.push(line.trim().to_owned());
+        }
     }
     lines
 }
