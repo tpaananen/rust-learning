@@ -10,7 +10,7 @@ pub mod regex_factory;
 pub mod utils;
 pub mod constants;
 
-const MESSAGE: &'static str = "Jäämiehet varmaan hommissa...";
+const MESSAGE: &'static str = "Jiämiekkoset vielä hommissa...";
 
 #[tokio::main]
 async fn main() {
@@ -25,7 +25,7 @@ fn print(games: &GameList) {
     games.print();
     print_line();
     println!();
-    println!("{} {}", "> Lennän seuraavaksi:".bright_blue(), &games.get_next_game_to_go());
+    println!("{} {}", "> Seuraava kohde patjalla:".bright_blue(), &games.get_next_game_to_go());
     println!();
     print_line();
     println!();
