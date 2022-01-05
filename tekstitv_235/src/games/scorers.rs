@@ -11,7 +11,7 @@ struct Scorer {
 impl Scorer {
     fn new(line: &str, regex_factory: &RegexFactory, finnish_players: &Vec<String>) -> Self {
         let name = if line.len() > 2 { line[..line.len() - 2].to_owned() } else { "".to_owned() };
-        let is_finnish_player = name.len() > 2 && name.starts_with("(") || finnish_players.iter().any(|p| { name.contains(p) });
+        let is_finnish_player = name.len() > 2 && (name.starts_with("(") || name.starts_with(" (") || finnish_players.iter().any(|p| { name.contains(p) }));
         let time = if line.len() > 2 { line[line.len() - 2..].to_owned() } else { "".to_owned() };
         let is_overtime = regex_factory.regex_overtime_goal.is_match(line);
         Scorer { name, time, is_finnish_player, is_overtime}
