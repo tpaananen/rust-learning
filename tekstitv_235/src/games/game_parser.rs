@@ -86,7 +86,7 @@ fn parse_lines(pages: &Vec<String>) -> Vec<String> {
                 break;
             }
             previous_was_empty = empty;
-            lines.push(line.trim().to_owned());
+            lines.push(line.to_owned());
         }
     }
     lines

@@ -40,7 +40,7 @@ impl Scorers {
 
     pub(super) fn print(&self) {
         for (home, away) in &self.scorers {
-            println!(" {} {}", home.to_string(), away.to_string());
+            println!("{} {}", home.to_string(), away.to_string());
         }
     }
 }
@@ -48,8 +48,8 @@ impl Scorers {
 fn parse_scores(lines: &Vec<&str>, regex_factory: &RegexFactory, finnish_players: &Vec<String>, line_number: &mut usize) -> Vec<(Scorer, Scorer)> {
     let mut scorers: Vec<(Scorer, Scorer)> = Vec::new();
     for line in lines.iter().skip(*line_number) {
-        let home_scorer: String = line.chars().take(COL_WIDTH_HOME + 1).collect();
-        let away_scorer: String = line.chars().skip(COL_WIDTH_HOME + 2).take(COL_WIDTH_HOME + 2).collect();
+        let home_scorer: String = line.chars().take(COL_WIDTH_HOME + 2).collect();
+        let away_scorer: String = line.chars().skip(COL_WIDTH_HOME + 3).collect();
         scorers.push((
             Scorer::new(&home_scorer, regex_factory, finnish_players),
             Scorer::new(&away_scorer, regex_factory, finnish_players)

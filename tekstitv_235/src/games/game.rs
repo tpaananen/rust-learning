@@ -60,9 +60,10 @@ impl Game {
 fn parse_period_results(lines: &Vec<&str>, regex_factory: &RegexFactory, line_number: &mut usize) -> String {
     if lines.len() > 0 {
         let regx = &regex_factory.regex_on_going_matches_by_time;
-        if regx.is_match(lines[0]) {
+        let trimmed_line = lines[0].trim_start();
+        if regx.is_match(trimmed_line) {
             *line_number = 1;
-            return lines[0].to_owned();
+            return trimmed_line.to_owned();
         }
     }
 
