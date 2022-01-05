@@ -62,7 +62,7 @@ fn parse_period_results(lines: &Vec<&str>, regex_factory: &RegexFactory, line_nu
         let regx = &regex_factory.regex_on_going_matches_by_time;
         let trimmed_line = lines[0].trim_start();
         if regx.is_match(trimmed_line) {
-            *line_number = 1;
+            *line_number += 1;
             return trimmed_line.to_owned();
         }
     }

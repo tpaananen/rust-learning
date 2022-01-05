@@ -1,6 +1,7 @@
+use std::io::{Write, stdout};
 use crate::games::game::{Game};
 use crate::regex_factory::RegexFactory;
-use crate::utils::is_empty_or_whitespace;
+use crate::utils::{is_empty_or_whitespace, print_line};
 use super::game_list::GameList;
 use reqwest::Url;
 use scraper::{Html, Selector};
@@ -8,6 +9,8 @@ use scraper::{Html, Selector};
 pub async fn fetch_games(use_mock_data: bool) -> GameList {
     let game_lines = fetch_game_pages(use_mock_data).await;
     let finnish_players = fetch_finnish_players().await;
+
+    print_line();
     parse_games(&game_lines, &finnish_players)
 }
 
@@ -23,6 +26,8 @@ async fn fetch_game_pages(use_mock_data: bool) -> Vec<String> {
     }
 
     loop {
+        stdout().flush().expect("flushing failed");
+
         let url_str = format!("https://yle.fi/tekstitv/txt/235_{:0>4}.htm", index);
         let url = Url::parse(&url_str).unwrap();
         let res = reqwest::get(url).await.expect("Failed to load results from YLE web site");
@@ -36,17 +41,21 @@ async fn fetch_game_pages(use_mock_data: bool) -> Vec<String> {
             break;
         }
 
+        print_line();
         pages.push(html);
         index += 1;
     }
 
+    print_line();
     parse_lines(&pages)
 }
 
 async fn fetch_finnish_players() -> Vec<String> {
     let mut finnish_players: Vec<String> = Vec::new();
     let mut index = 2;
+
     loop {
+        stdout().flush().expect("flushing failed");
         let url_str = format!("https://yle.fi/tekstitv/txt/238_{:0>4}.htm", index);
         let url = Url::parse(&url_str).unwrap();
         let res = reqwest::get(url).await.expect("Failed to load results from YLE web site");
@@ -60,6 +69,11 @@ async fn fetch_finnish_players() -> Vec<String> {
             break;
         }
 
+        if html.contains("NHL-MAALIVAHDIT") {
+            break;
+        }
+
+        print_line();
         finnish_players.push(html);
         index += 1;
     }
@@ -75,7 +89,7 @@ fn parse_lines(pages: &Vec<String>) -> Vec<String> {
         let document = Html::parse_document(&page);
         let filtering = document
             .select(&selector)
-            .flat_map(|element| { element.text().flat_map(|text| { text.lines() })})
+            .flat_map(|element| { element.text().flat_map(|text| text.lines())})
             .filter(|line| { !line.contains("NHL-") });
 
         let mut previous_was_empty = false;

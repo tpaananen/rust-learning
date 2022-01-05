@@ -27,7 +27,7 @@ impl GameList {
             return MESSAGE;
         }
 
-        let on_going_games = self.games.iter().filter(|game| { game.get_status() == GameStatus::Started }).collect::<Vec<_>>();
+        let on_going_games = self.games.iter().filter(|game| game.get_status() == GameStatus::Started).collect::<Vec<_>>();
         if on_going_games.is_empty() {
             return MESSAGE;
         }

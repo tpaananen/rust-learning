@@ -29,7 +29,7 @@ fn is_finnish_player(line: &str, finnish_players: &Vec<String>) -> bool {
     line.len() > 2
         && (line.starts_with("(")
             || line.starts_with(" (")
-            || finnish_players.iter().any(|p| { line.contains(p) })
+            || finnish_players.iter().any(|p| line.contains(p))
             || line.contains("torjuntaa"))
 }
 
