@@ -6,7 +6,6 @@ Randomly gets the next match to watch from the games that are currently on going
 
 ## TODO list
 
-- Refactor out of main.rs into meaningful structures.
 - Handle Siir. cases
 - Make it testable and add tests
 
