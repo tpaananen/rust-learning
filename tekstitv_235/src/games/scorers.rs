@@ -3,29 +3,34 @@ use crate::{regex_factory::RegexFactory, constants::COL_WIDTH_HOME};
 
 struct Scorer {
     name: String,
-    time: String,
     is_finnish_player: bool,
     is_overtime: bool
 }
 
 impl Scorer {
     fn new(line: &str, regex_factory: &RegexFactory, finnish_players: &Vec<String>) -> Self {
-        let name = if line.len() > 2 { line[..line.len() - 2].to_owned() } else { "".to_owned() };
-        let is_finnish_player = name.len() > 2 && (name.starts_with("(") || name.starts_with(" (") || finnish_players.iter().any(|p| { name.contains(p) }));
-        let time = if line.len() > 2 { line[line.len() - 2..].to_owned() } else { "".to_owned() };
+        let is_finnish_player = is_finnish_player(line, finnish_players);
         let is_overtime = regex_factory.regex_overtime_goal.is_match(line);
-        Scorer { name, time, is_finnish_player, is_overtime}
+        Scorer { name: line.to_owned(), is_finnish_player, is_overtime}
     }
 
     fn to_string(&self) -> String {
         if self.is_overtime {
-            format!("{}{}", self.name.bright_magenta(), self.time.bright_magenta())
+            format!("{}", self.name.bright_magenta())
         } else if self.is_finnish_player {
-            format!("{}{}", self.name.bright_green(), self.time.bright_green())
+            format!("{}", self.name.bright_green())
         } else {
-            format!("{}{}", self.name.bright_cyan(), self.time.bright_cyan())
+            format!("{}", self.name.bright_cyan())
         }
     }
+}
+
+fn is_finnish_player(line: &str, finnish_players: &Vec<String>) -> bool {
+    line.len() > 2
+        && (line.starts_with("(")
+            || line.starts_with(" (")
+            || finnish_players.iter().any(|p| { line.contains(p) })
+            || line.contains("torjuntaa"))
 }
 
 
