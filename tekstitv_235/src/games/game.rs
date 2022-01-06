@@ -24,7 +24,7 @@ impl GameStatus {
 
 pub struct Game {
     status: GameStatus,
-    period_results: String,
+    period_results: Option<String>,
     teams: Teams,
     scorers: Scorers
 }
@@ -48,8 +48,9 @@ impl Game {
     }
 
     pub fn print(&self) {
-        if !self.period_results.is_empty() {
-            println!("{}", &self.period_results.yellow());
+        let res = self.period_results.as_ref();
+        if res.is_some() {
+            println!("{}", res.unwrap().yellow());
         }
 
         self.teams.print(&self.status);
@@ -57,21 +58,21 @@ impl Game {
     }
 }
 
-fn parse_period_results(lines: &Vec<&str>, regex_factory: &RegexFactory, line_number: &mut usize) -> String {
+fn parse_period_results(lines: &Vec<&str>, regex_factory: &RegexFactory, line_number: &mut usize) -> Option<String> {
     if lines.len() > 0 {
         let regx = &regex_factory.regex_on_going_matches_by_time;
         let trimmed_line = lines[0].trim_start();
         if regx.is_match(trimmed_line) {
             *line_number += 1;
-            return trimmed_line.to_owned();
+            return Some(trimmed_line.to_owned());
         }
     }
 
-    "".to_owned()
+    None
 }
 
-fn parse_status(period_results: &str, result: &str, regex_factory: &RegexFactory) -> GameStatus {
-    if !period_results.is_empty() {
+fn parse_status(period_results: &Option<String>, result: &str, regex_factory: &RegexFactory) -> GameStatus {
+    if period_results.is_some() {
         GameStatus::Started
     } else if regex_factory.regex_on_going_matches_by_time.is_match(result) {
         GameStatus::NotStarted
