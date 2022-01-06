@@ -131,7 +131,9 @@ fn parse_games(game_lines: &Vec<String>, finnish_players: &Vec<String>) -> GameL
     let mut game: Vec<&str> = Vec::new();
     for line in game_lines {
         if game.len() > 0 && is_empty_or_whitespace(line) {
-            games.push(Game::from_lines(game, finnish_players, &regex_factory));
+            if let Some(game) = Game::from_lines(game, finnish_players, &regex_factory) {
+                games.push(game);
+            }
             game = Vec::new();
         } else if !is_empty_or_whitespace(line) {
             game.push(line);

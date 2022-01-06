@@ -9,10 +9,10 @@ pub struct Teams {
 }
 
 impl Teams {
-    pub(super) fn from_lines(lines: &Vec<&str>, line_number: &mut usize) -> Self {
+    pub(super) fn from_lines(lines: &Vec<&str>, line_number: &mut usize) -> Option<Self> {
             let curr_line = *line_number;
         if lines.len() <= curr_line {
-            panic!("Not enough lines to parse game, current line {}, lines provided: {}", curr_line, lines.len());
+            return None;
         }
 
         let line = &lines[curr_line];
@@ -24,7 +24,7 @@ impl Teams {
         let is_overtime = result.starts_with("ja ");
         *line_number += 1;
 
-        Teams { home_team, away_team, result, is_overtime }
+        Some(Teams { home_team, away_team, result, is_overtime })
     }
 
     pub(super) fn get_home_team_name(&self) -> &str {
