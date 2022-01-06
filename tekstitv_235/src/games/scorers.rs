@@ -33,7 +33,6 @@ fn is_finnish_player(line: &str, finnish_players: &Vec<String>) -> bool {
             || line.contains("torjunta"))
 }
 
-
 pub struct Scorers {
     scorers: Vec<(Scorer, Scorer)>
 }

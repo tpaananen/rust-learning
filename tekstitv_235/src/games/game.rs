@@ -33,15 +33,14 @@ impl Game {
     pub fn from_lines(lines: Vec<&str>, finnish_players: &Vec<String>, regex_factory: &RegexFactory) -> Option<Self> {
         let mut line_number: usize = 0;
         let period_results = parse_period_results(&lines, regex_factory, &mut line_number);
-        let teams_opt = Teams::from_lines(&lines, &mut line_number);
-        if teams_opt.is_none() {
-            return None;
+        if let Some(teams) = Teams::from_lines(&lines, &mut line_number) {
+            let status = parse_status(&period_results, teams.get_result(), regex_factory);
+            let scorers = Scorers::from_lines(
+                &lines, &regex_factory, finnish_players, teams.get_is_overtime(), &mut line_number);
+            Some(Game { status, period_results, teams, scorers })
+        } else {
+            None
         }
-
-        let teams = teams_opt.unwrap();
-        let status = parse_status(&period_results, teams.get_result(), regex_factory);
-        let scorers = Scorers::from_lines(&lines, &regex_factory, finnish_players, teams.get_is_overtime(), &mut line_number);
-        Some(Game { status, period_results, teams, scorers })
     }
 
     pub fn get_home_team_name(&self) -> &str {
@@ -72,7 +71,6 @@ fn parse_period_results(lines: &Vec<&str>, regex_factory: &RegexFactory, line_nu
             return Some(trimmed_line.to_owned());
         }
     }
-
     None
 }
 
