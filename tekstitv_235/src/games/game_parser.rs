@@ -86,8 +86,8 @@ fn parse_lines(pages: &Vec<String>) -> Vec<String> {
         let document = Html::parse_document(&page);
         let filtering = document
             .select(&selector)
-            .flat_map(|element| { element.text().flat_map(|text| text.lines())})
-            .filter(|line| { !line.contains("NHL-") });
+            .flat_map(|element| element.text().flat_map(|text| text.lines()))
+            .filter(|line| !line.contains("NHL-"));
 
         let mut previous_was_empty = false;
         for line in filtering {
@@ -116,9 +116,9 @@ fn parse_player_lines(pages: &Vec<String>) -> Vec<String> {
         let document = Html::parse_document(&page);
         document
             .select(&selector)
-            .flat_map(|element| { element.text().flat_map(|text| { text.lines() })})
-            .filter(|line| { !is_empty_or_whitespace(line) && line.len() > 21 && !line.contains("NHL-") })
-            .for_each(|line| { lines.push(line.trim().chars().take(18).collect::<String>().split(" ").nth(1).unwrap().to_owned()) });
+            .flat_map(|element| element.text().flat_map(|text| text.lines()))
+            .filter(|line| !is_empty_or_whitespace(line) && line.len() > 21 && !line.contains("NHL-"))
+            .for_each(|line| lines.push(line.trim().chars().take(18).collect::<String>().split(" ").nth(1).unwrap().to_owned()));
     }
     lines
 }
