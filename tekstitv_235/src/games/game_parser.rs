@@ -1,3 +1,4 @@
+use crate::constants::{COL_WIDTH_PLAYER_NAME, COL_WIDTH_PLAYER};
 use crate::games::game::{Game};
 use crate::regex_factory::RegexFactory;
 use crate::utils::{is_empty_or_whitespace, print_line, print_loading};
@@ -117,8 +118,8 @@ fn parse_player_lines(pages: &Vec<String>) -> Vec<String> {
         document
             .select(&selector)
             .flat_map(|element| element.text().flat_map(|text| text.lines()))
-            .filter(|line| !is_empty_or_whitespace(line) && line.len() > 21 && !line.contains("NHL-"))
-            .for_each(|line| lines.push(line.trim().chars().take(18).collect::<String>().split(" ").nth(1).unwrap().to_owned()));
+            .filter(|line| !is_empty_or_whitespace(line) && line.len() > COL_WIDTH_PLAYER && !line.contains("NHL-"))
+            .for_each(|line| lines.push(line.trim().chars().take(COL_WIDTH_PLAYER_NAME).collect::<String>().split(" ").nth(1).unwrap().to_owned()));
     }
     lines
 }
