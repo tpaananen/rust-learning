@@ -1,4 +1,3 @@
-use std::io::{Write, stdout};
 use crate::games::game::{Game};
 use crate::regex_factory::RegexFactory;
 use crate::utils::{is_empty_or_whitespace, print_line, print_loading};
@@ -27,8 +26,6 @@ async fn fetch_game_pages(use_mock_data: bool) -> Vec<String> {
     }
 
     loop {
-        stdout().flush().expect("flushing failed");
-
         let url_str = format!("https://yle.fi/tekstitv/txt/235_{:0>4}.htm", index);
         let url = Url::parse(&url_str).unwrap();
         let res = reqwest::get(url).await.expect("Failed to load results from YLE web site");
@@ -56,7 +53,6 @@ async fn fetch_finnish_players() -> Vec<String> {
     let mut index = 2;
 
     loop {
-        stdout().flush().expect("flushing failed");
         let url_str = format!("https://yle.fi/tekstitv/txt/238_{:0>4}.htm", index);
         let url = Url::parse(&url_str).unwrap();
         let res = reqwest::get(url).await.expect("Failed to load results from YLE web site");
