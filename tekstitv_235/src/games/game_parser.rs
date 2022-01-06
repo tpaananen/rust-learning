@@ -1,12 +1,13 @@
 use std::io::{Write, stdout};
 use crate::games::game::{Game};
 use crate::regex_factory::RegexFactory;
-use crate::utils::{is_empty_or_whitespace, print_line};
+use crate::utils::{is_empty_or_whitespace, print_line, print_loading};
 use super::game_list::GameList;
 use reqwest::Url;
 use scraper::{Html, Selector};
 
 pub async fn fetch_games(use_mock_data: bool) -> GameList {
+    print_loading();
     let game_lines = fetch_game_pages(use_mock_data).await;
     let finnish_players = fetch_finnish_players().await;
 

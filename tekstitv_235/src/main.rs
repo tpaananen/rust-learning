@@ -3,14 +3,14 @@ use games::game_list::GameList;
 use games::game_parser::fetch_games;
 use utils::print_tonight;
 
-use crate::utils::print_line;
+use crate::utils::{print_line, print_selection};
 
 pub mod games;
 pub mod regex_factory;
 pub mod utils;
 pub mod constants;
 
-const MESSAGE: &'static str = "Jiämiekkoset vielä hommissa...";
+const MESSAGE: &'static str = "Jiämiekkoset hommissa, joten kätee...";
 
 #[tokio::main]
 async fn main() {
@@ -23,7 +23,7 @@ fn print(games: &GameList) {
     print_tonight();
     println!();
     games.print();
-    print_line();
+    print_selection();
     println!();
     println!("{} {}", "> Seuraava kohde patjalla:".bright_blue(), &games.get_next_game_to_go());
     println!();
