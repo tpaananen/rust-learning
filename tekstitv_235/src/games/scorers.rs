@@ -8,9 +8,9 @@ struct Scorer {
 }
 
 impl Scorer {
-    fn new(line: &str, regex_factory: &RegexFactory, finnish_players: &Vec<String>) -> Self {
+    fn new(line: &str, regex_factory: &RegexFactory, finnish_players: &Vec<String>, is_on_overtime: bool) -> Self {
         let is_finnish_player = is_finnish_player(line, finnish_players);
-        let is_overtime = regex_factory.regex_overtime_goal.is_match(line);
+        let is_overtime = is_on_overtime && regex_factory.regex_overtime_goal.is_match(line);
         Scorer { name: line.to_owned(), is_finnish_player, is_overtime}
     }
 
@@ -39,8 +39,8 @@ pub struct Scorers {
 }
 
 impl Scorers {
-    pub(super) fn from_lines(lines: &Vec<&str>, regex_factory: &RegexFactory, finnish_players: &Vec<String>, line_number: &mut usize) -> Self {
-        Scorers { scorers: parse_scores(lines, regex_factory, finnish_players, line_number) }
+    pub(super) fn from_lines(lines: &Vec<&str>, regex_factory: &RegexFactory, finnish_players: &Vec<String>, is_on_overtime: bool, line_number: &mut usize) -> Self {
+        Scorers { scorers: parse_scores(lines, regex_factory, finnish_players, is_on_overtime, line_number) }
     }
 
     pub(super) fn print(&self) {
@@ -50,14 +50,14 @@ impl Scorers {
     }
 }
 
-fn parse_scores(lines: &Vec<&str>, regex_factory: &RegexFactory, finnish_players: &Vec<String>, line_number: &mut usize) -> Vec<(Scorer, Scorer)> {
+fn parse_scores(lines: &Vec<&str>, regex_factory: &RegexFactory, finnish_players: &Vec<String>, is_on_overtime: bool, line_number: &mut usize) -> Vec<(Scorer, Scorer)> {
     let mut scorers: Vec<(Scorer, Scorer)> = Vec::new();
     for line in lines.iter().skip(*line_number) {
         let home_scorer: String = line.chars().take(COL_WIDTH_HOME + 2).collect();
         let away_scorer: String = line.chars().skip(COL_WIDTH_HOME + 3).collect();
         scorers.push((
-            Scorer::new(&home_scorer, regex_factory, finnish_players),
-            Scorer::new(&away_scorer, regex_factory, finnish_players)
+            Scorer::new(&home_scorer, regex_factory, finnish_players, is_on_overtime),
+            Scorer::new(&away_scorer, regex_factory, finnish_players, is_on_overtime)
         ));
     }
     *line_number += scorers.len();

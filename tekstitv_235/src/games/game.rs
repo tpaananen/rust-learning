@@ -35,7 +35,7 @@ impl Game {
         let period_results = parse_period_results(&lines, regex_factory, &mut line_number);
         let teams = Teams::from_lines(&lines, &mut line_number);
         let status = parse_status(&period_results, teams.get_result(), regex_factory);
-        let scorers = Scorers::from_lines(&lines, &regex_factory, finnish_players, &mut line_number);
+        let scorers = Scorers::from_lines(&lines, &regex_factory, finnish_players, teams.get_is_overtime(), &mut line_number);
         Game { status, period_results, teams, scorers }
     }
 

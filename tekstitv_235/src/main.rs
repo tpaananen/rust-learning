@@ -14,7 +14,7 @@ const MESSAGE: &'static str = "Jiämiekkoset hommissa, joten kätee...";
 
 #[tokio::main]
 async fn main() {
-    let use_mock_data = false;
+    let use_mock_data = true;
     let games = &fetch_games(use_mock_data).await;
     print(games);
 }
