@@ -47,6 +47,8 @@ fn print_future_games(future_games: &Vec<String>) {
     for line in future_games {
         if line.contains("siir.") {
             println!("{}", line.trim_start().white().dimmed());
+        } else if line.len() < 8 {
+            println!("{}", line.trim_start().bright_yellow());
         } else {
             println!("{}", line.trim_start().bright_white());
         }
