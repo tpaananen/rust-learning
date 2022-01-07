@@ -21,7 +21,7 @@ impl Teams {
         let home_team = teams[0].trim().to_owned();
         let away_team = away_team_and_result_or_time[0].trim().to_owned();
         let result = away_team_and_result_or_time.last().unwrap().trim().to_owned();
-        let is_overtime = result.starts_with("ja ");
+        let is_overtime = result.starts_with("ja ") || result.starts_with("vl ");
         *line_number += 1;
 
         Some(Teams { home_team, away_team, result, is_overtime })
