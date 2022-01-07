@@ -16,6 +16,11 @@ pub fn print_tonight() {
     stdout().flush().expect("flushing failed");
 }
 
+pub fn print_tomorrow() {
+    println!("{}{}{}", "================= ".bright_red(), " NHL TOMORROW ".bright_white(), "==================================".bright_blue());
+    stdout().flush().expect("flushing failed");
+}
+
 pub fn print_loading() {
     println!("{}{}{}", "================= ".bright_red(), " NHL LOADING ".bright_white(), " ==================================".bright_blue());
     stdout().flush().expect("flushing failed");

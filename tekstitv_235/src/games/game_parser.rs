@@ -13,11 +13,6 @@ pub async fn fetch_games(use_mock_data: bool) -> GameList {
     let finnish_players = fetch_finnish_players().await;
     let mut games = GameList::new();
     parse_games(&mut games, &game_lines, &finnish_players, &regex_factory);
-
-    if games.all_games_completed() {
-        fetch_future_game_pages(&mut games, &regex_factory).await
-    }
-
     games
 }
 
@@ -43,13 +38,12 @@ async fn fetch_finnish_players() -> Vec<String> {
     parse_player_lines(&pages)
 }
 
-async fn fetch_future_game_pages(games: &mut GameList, regex_factory: &RegexFactory) {
-   let page_number = 237;
+pub async fn fetch_future_game_pages() -> Vec<String> {
+    let page_number = 237;
     let sub_index = 3;
     let error_message = "Failed to load future games from YLE web site";
     let pages = fetch_pages(page_number, sub_index, error_message).await;
-    let game_lines = parse_lines(&pages);
-    parse_future_games(games, &game_lines, regex_factory);
+    parse_lines(&pages)
 }
 
 fn parse_lines(pages: &Vec<String>) -> Vec<String> {
@@ -107,20 +101,6 @@ fn parse_games(games: &mut GameList, game_lines: &Vec<String>, finnish_players: 
             lines.clear();
         } else if !is_empty_or_whitespace(line) {
             lines.push(line);
-        }
-    }
-}
-
-fn parse_future_games(games: &mut GameList, game_lines: &Vec<String>, regex_factory: &RegexFactory) {
-    let finnish_players: Vec<String> = Vec::new();
-    let mut lines: Vec<&str> = Vec::with_capacity(1);
-    for line in game_lines {
-        if line.len() > 7 && !is_empty_or_whitespace(line) {
-            lines.push(line);
-            if let Some(game) = Game::from_lines(&lines, &finnish_players, regex_factory) {
-                games.push(game);
-            }
-            lines.clear();
         }
     }
 }
