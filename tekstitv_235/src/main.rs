@@ -45,6 +45,10 @@ fn print_next_target(games: &GameList) {
 fn print_future_games(future_games: &Vec<String>) {
     print_tomorrow();
     for line in future_games {
-        println!("{}", line.trim_start().bright_white());
+        if line.contains("siir.") {
+            println!("{}", line.trim_start().white().dimmed());
+        } else {
+            println!("{}", line.trim_start().bright_white());
+        }
     }
 }
