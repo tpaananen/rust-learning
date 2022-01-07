@@ -38,4 +38,8 @@ impl GameList {
         let game = &on_going_games[(rand_value * 1000.0) as usize % len];
         game.get_home_team_name()
     }
+
+    pub(crate) fn all_games_completed(&self) -> bool {
+        self.games.len() == 0 || self.games.iter().all(|game| game.is_completed())
+    }
 }
