@@ -44,6 +44,11 @@ impl Teams {
         print!("{:<home_width$}", self.home_team.color(color), home_width = COL_WIDTH_HOME);
         print!(" - ");
         print!("{:<away_width$}", self.away_team.color(color), away_width = COL_WIDTH_AWAY);
-        println!("{:>result_width$}", self.result.color(color), result_width = 8);
+
+        if self.is_overtime {
+            println!("{:>result_width$}", self.result.bright_magenta(), result_width = 8);
+        } else {
+            println!("{:>result_width$}", self.result.color(color), result_width = 8);
+        }
     }
 }
