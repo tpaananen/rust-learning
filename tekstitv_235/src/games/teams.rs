@@ -1,11 +1,25 @@
 use colored::Colorize;
 use crate::{games::game::GameStatus, constants::{COL_WIDTH_HOME, COL_WIDTH_AWAY}};
 
+struct GameResult {
+    result: String,
+    is_overtime: bool
+}
+
+impl GameResult {
+    fn to_string(&self, color: &str) -> String {
+        if self.is_overtime {
+            format!("{:>result_width$}", self.result.bright_magenta(), result_width = 8)
+        } else {
+            format!("{:>result_width$}", self.result.color(color), result_width = 8)
+        }
+    }
+}
+
 pub struct Teams {
     home_team: String,
     away_team: String,
-    result: String,
-    is_overtime: bool
+    result: GameResult
 }
 
 impl Teams {
@@ -24,7 +38,7 @@ impl Teams {
         let is_overtime = result.starts_with("ja ") || result.starts_with("vl ");
         *line_number += 1;
 
-        Some(Teams { home_team, away_team, result, is_overtime })
+        Some(Teams { home_team, away_team, result: GameResult { result, is_overtime }})
     }
 
     pub(super) fn get_home_team_name(&self) -> &str {
@@ -32,11 +46,11 @@ impl Teams {
     }
 
     pub(super) fn get_result(&self) -> &str {
-        &self.result
+        &self.result.result
     }
 
     pub(super) fn get_is_overtime(&self) -> bool {
-        self.is_overtime
+        self.result.is_overtime
     }
 
     pub(super) fn print(&self, status: &GameStatus) {
@@ -44,11 +58,6 @@ impl Teams {
         print!("{:<home_width$}", self.home_team.color(color), home_width = COL_WIDTH_HOME);
         print!(" - ");
         print!("{:<away_width$}", self.away_team.color(color), away_width = COL_WIDTH_AWAY);
-
-        if self.is_overtime {
-            println!("{:>result_width$}", self.result.bright_magenta(), result_width = 8);
-        } else {
-            println!("{:>result_width$}", self.result.color(color), result_width = 8);
-        }
+        println!("{}", self.result.to_string(color));
     }
 }
