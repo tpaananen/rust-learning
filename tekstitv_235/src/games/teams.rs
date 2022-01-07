@@ -7,6 +7,11 @@ struct GameResult {
 }
 
 impl GameResult {
+    fn new(result_str: &str) -> Self {
+        let is_overtime = result_str.starts_with("ja ") || result_str.starts_with("vl ");
+        GameResult { result: result_str.to_owned(), is_overtime }
+    }
+
     fn to_string(&self, color: &str) -> String {
         if self.is_overtime {
             format!("{:>result_width$}", self.result.bright_magenta(), result_width = 8)
@@ -34,11 +39,10 @@ impl Teams {
         let away_team_and_result_or_time = teams[1].split("  ").collect::<Vec<_>>();
         let home_team = teams[0].trim().to_owned();
         let away_team = away_team_and_result_or_time[0].trim().to_owned();
-        let result = away_team_and_result_or_time.last().unwrap().trim().to_owned();
-        let is_overtime = result.starts_with("ja ") || result.starts_with("vl ");
+        let result = GameResult::new(away_team_and_result_or_time.last().unwrap().trim());
         *line_number += 1;
 
-        Some(Teams { home_team, away_team, result: GameResult { result, is_overtime }})
+        Some(Teams { home_team, away_team, result })
     }
 
     pub(super) fn get_home_team_name(&self) -> &str {
