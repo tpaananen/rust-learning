@@ -36,6 +36,10 @@ impl Teams {
 
         let line = &lines[curr_line];
         let teams = line.split(" - ").collect::<Vec<_>>();
+        if teams.len() < 2 {
+            return None;
+        }
+
         let away_team_and_result_or_time = teams[1].split("  ").collect::<Vec<_>>();
         let home_team = teams[0].trim().to_owned();
         let away_team = away_team_and_result_or_time[0].trim().to_owned();
