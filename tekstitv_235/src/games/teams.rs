@@ -1,6 +1,8 @@
 use colored::Colorize;
 use crate::{games::game::GameStatus, constants::{COL_WIDTH_HOME, COL_WIDTH_AWAY}};
 
+const RESULT_WIDTH: usize = 8;
+
 struct GameResult {
     result: String,
     is_overtime: bool
@@ -14,9 +16,9 @@ impl GameResult {
 
     fn to_string(&self, color: &str) -> String {
         if self.is_overtime {
-            format!("{:>result_width$}", self.result.bright_magenta(), result_width = 8)
+            format!("{result:>RESULT_WIDTH$}", result = self.result.bright_magenta())
         } else {
-            format!("{:>result_width$}", self.result.color(color), result_width = 8)
+            format!("{result:>RESULT_WIDTH$}", result = self.result.color(color))
         }
     }
 }
@@ -63,9 +65,11 @@ impl Teams {
 
     pub(super) fn print(&self, status: &GameStatus) {
         let color = status.to_color();
-        print!("{:<home_width$}", self.home_team.color(color), home_width = COL_WIDTH_HOME);
-        print!(" - ");
-        print!("{:<away_width$}", self.away_team.color(color), away_width = COL_WIDTH_AWAY);
-        println!("{}", self.result.to_string(color));
+        println!(
+            "{home_team:<COL_WIDTH_HOME$} - {away_team:<COL_WIDTH_AWAY$}{result}",
+            home_team = self.home_team.color(color),
+            away_team = self.away_team.color(color),
+            result  = self.result.to_string(color)
+        );
     }
 }

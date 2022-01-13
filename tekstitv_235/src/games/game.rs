@@ -54,7 +54,7 @@ impl Game {
     pub fn print(&self) {
         let res = self.period_results.as_ref();
         if res.is_some() {
-            println!("{}", res.unwrap().yellow());
+            println!("{period_results}", period_results = res.unwrap().yellow());
         }
 
         self.teams.print(&self.status);

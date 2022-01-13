@@ -16,11 +16,11 @@ impl Scorer {
 
     fn to_string(&self) -> String {
         if self.is_overtime {
-            format!("{}", self.name.bright_magenta())
+            format!("{name}", name = self.name.bright_magenta())
         } else if self.is_finnish_player {
-            format!("{}", self.name.bright_green())
+            format!("{name}", name = self.name.bright_green())
         } else {
-            format!("{}", self.name.bright_cyan())
+            format!("{name}", name = self.name.bright_cyan())
         }
     }
 }
@@ -44,7 +44,7 @@ impl Scorers {
 
     pub(super) fn print(&self) {
         for (home, away) in &self.scorers {
-            println!("{} {}", home.to_string(), away.to_string());
+            println!("{home_score} {away_score}", home_score = home.to_string(), away_score = away.to_string());
         }
     }
 }
