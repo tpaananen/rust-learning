@@ -1,21 +1,30 @@
-use std::{time::{Duration, Instant}, sync::mpsc::Sender, thread};
+use crate::{
+    frame::{Drawable, Frame},
+    invaders::Invaders,
+    player::Player,
+    score::Score,
+    sounds::GameAudio,
+};
 use crossterm::event::{self, Event};
-use crate::{sounds::GameAudio, frame::{Frame, Drawable}, player::Player, invaders::Invaders, score::Score};
+use std::{
+    sync::mpsc::Sender,
+    thread,
+    time::{Duration, Instant},
+};
 
 pub fn game_loop(
     audio: &mut GameAudio,
     render_tx: &Sender<Frame>,
     num_rows: usize,
     num_columns: usize,
-    num_shots: usize) {
-
+    num_shots: usize,
+) {
     let mut instant = Instant::now();
     let mut player = Player::new(num_rows, num_columns, num_shots);
     let mut invaders = Invaders::new(num_rows, num_columns);
     let mut score = Score::new(invaders.count());
 
     'gameloop: loop {
-
         let delta = instant.elapsed();
         instant = Instant::now();
         let mut curr_frame = Frame::new(num_rows, num_columns);
@@ -69,11 +78,11 @@ fn process_player_input(player: &mut Player, audio: &mut GameAudio) -> bool {
                     if player.shoot() {
                         audio.play_pew();
                     }
-                },
+                }
                 event::KeyCode::Esc => {
                     audio.play_lose();
                     return true;
-                },
+                }
                 _ => {}
             }
         }

@@ -1,14 +1,18 @@
-use crate::frame::{Frame, Drawable};
+use crate::frame::{Drawable, Frame};
 
 pub struct Score {
     invaders_destroyed: usize,
     invaders_count: usize,
-    total_shots_used: usize
+    total_shots_used: usize,
 }
 
 impl Score {
     pub fn new(invaders_count: usize) -> Self {
-        Score { invaders_destroyed: 0, invaders_count, total_shots_used: 0 }
+        Score {
+            invaders_destroyed: 0,
+            invaders_count,
+            total_shots_used: 0,
+        }
     }
 
     pub fn increment_progress(&mut self, count_hits: usize) {
@@ -28,6 +32,9 @@ impl Drawable for Score {
         } else {
             100.0
         };
-        frame.update_top_row(&format!("PRGRESS: {:.2} % :: ACCURACY {:.2} %", percentage, accuracy));
+        frame.update_top_row(&format!(
+            "PRGRESS: {:.2} % :: ACCURACY {:.2} %",
+            percentage, accuracy
+        ));
     }
 }

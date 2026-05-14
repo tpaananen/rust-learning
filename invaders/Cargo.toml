@@ -2,11 +2,12 @@
 name = "invaders"
 version = "1.0.0"
 edition = "2021"
+rust-version = "1.95"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-crossterm = "0.22.1"
-rusty_audio = "1.2.1"
-rusty_time = "0.11.3"
-array2d = "0.2.1"
+crossterm = "0.29.0"
+rusty_audio = "1.4.1"
+rusty_time = "1.1.0"
+array2d = "0.3.2"

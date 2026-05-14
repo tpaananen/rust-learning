@@ -1,6 +1,12 @@
-use std::{io, thread, error::Error, sync::mpsc};
-use crossterm::{cursor::{Hide, Show}, terminal::{self, EnterAlternateScreen, LeaveAlternateScreen}, ExecutableCommand};
-use invaders::{sounds::GameAudio, render::render_screen, game::game_loop, NUM_ROWS, NUM_COLUMNS, NUM_SHOTS};
+use crossterm::{
+    cursor::{Hide, Show},
+    terminal::{self, EnterAlternateScreen, LeaveAlternateScreen},
+    ExecutableCommand,
+};
+use invaders::{
+    game::game_loop, render::render_screen, sounds::GameAudio, NUM_COLUMNS, NUM_ROWS, NUM_SHOTS,
+};
+use std::{error::Error, io, sync::mpsc, thread};
 
 fn main() -> Result<(), Box<dyn Error>> {
     // Setup audio
