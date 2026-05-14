@@ -1,29 +1,45 @@
+use crate::frame::{Discoverable, Drawable, Frame, Position};
+use rusty_time::Timer;
 use std::time::Duration;
-use rusty_time::prelude::Timer;
-use crate::frame::{Drawable, Frame, Position, Discoverable};
 
 pub struct Shot {
     position: Position,
     exploding: bool,
-    timer: Timer
+    timer: Timer,
 }
 
 impl Discoverable for Shot {
-    fn get_col(&self) -> usize { self.position.col }
-    fn get_row(&self) -> usize { self.position.row }
-    fn show(&self) -> char { if self.exploding { '*' } else { '|' }}
+    fn get_col(&self) -> usize {
+        self.position.col
+    }
+    fn get_row(&self) -> usize {
+        self.position.row
+    }
+    fn show(&self) -> char {
+        if self.exploding {
+            '*'
+        } else {
+            '|'
+        }
+    }
 }
 
 impl Shot {
     pub fn new(col: usize, row: usize) -> Self {
-        Self { position: Position { col, row }, exploding: false, timer: Timer::from_millis(16) }
+        Self {
+            position: Position { col, row },
+            exploding: false,
+            timer: Timer::new(Duration::from_millis(16)),
+        }
     }
 
-    pub fn is_exploding(&self) -> bool { self.exploding }
+    pub fn is_exploding(&self) -> bool {
+        self.exploding
+    }
 
     pub fn update(&mut self, delta: Duration) {
-        self.timer.update(delta);
-        if self.timer.ready && !self.exploding {
+        self.timer.tick(delta);
+        if self.timer.just_finished() && !self.exploding {
             if self.position.row > 0 {
                 self.position.row -= 1;
             }
@@ -34,12 +50,12 @@ impl Shot {
     pub fn explode(&mut self) {
         if !self.exploding {
             self.exploding = true;
-            self.timer = Timer::from_millis(250);
+            self.timer = Timer::new(Duration::from_millis(250));
         }
     }
 
     pub fn is_dead(&self) -> bool {
-        (self.exploding && self.timer.ready) || self.position.row == 0
+        (self.exploding && self.timer.finished()) || self.position.row == 0
     }
 }
 

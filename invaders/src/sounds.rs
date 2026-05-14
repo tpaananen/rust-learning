@@ -1,7 +1,7 @@
 use rusty_audio::Audio;
 
 pub struct GameAudio {
-    audio: Audio
+    audio: Audio,
 }
 
 impl GameAudio {

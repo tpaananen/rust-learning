@@ -1,5 +1,5 @@
-use std::io::Stdout;
 use array2d::Array2D;
+use std::io::Stdout;
 
 pub trait Discoverable {
     fn get_col(&self) -> usize;
@@ -17,16 +17,25 @@ pub struct Position {
 }
 
 pub struct Frame {
-    frame: Array2D<char>
+    frame: Array2D<char>,
 }
 
 impl Frame {
     pub fn new(num_rows: usize, num_columns: usize) -> Self {
-        Frame { frame: Array2D::from_row_major(&vec![' '; num_rows * num_columns], num_rows, num_columns) }
+        Frame {
+            frame: Array2D::from_row_major(
+                &vec![' '; num_rows * num_columns],
+                num_rows,
+                num_columns,
+            )
+            .expect("frame dimensions should match the backing buffer"),
+        }
     }
 
     pub fn update_item(&mut self, drawable: &dyn Discoverable) {
-        self.frame.set(drawable.get_row(), drawable.get_col(), drawable.show()).unwrap();
+        self.frame
+            .set(drawable.get_row(), drawable.get_col(), drawable.show())
+            .unwrap();
     }
 
     pub fn update_top_row(&mut self, val: &String) {
@@ -40,7 +49,9 @@ impl Frame {
     }
 
     pub fn update_each_cell<F>(&self, stdout: &mut Stdout, prev_frame: &Frame, renderer: F)
-        where F: Fn(usize, usize, &char, &char, &mut Stdout) {
+    where
+        F: Fn(usize, usize, &char, &char, &mut Stdout),
+    {
         for (row_index, row_iter) in self.frame.rows_iter().enumerate() {
             for (col_index, current_value) in row_iter.enumerate() {
                 let previous_value = prev_frame.get_value_at(col_index, row_index);

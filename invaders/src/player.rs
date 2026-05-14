@@ -1,14 +1,14 @@
-use std::time::Duration;
-use crate::shot::Shot;
+use crate::frame::{Discoverable, Drawable, Frame, Position};
 use crate::invaders::Invaders;
-use crate::frame::{Frame, Drawable, Position, Discoverable};
+use crate::shot::Shot;
+use std::time::Duration;
 
 pub struct Player {
     position: Position,
     shots: Vec<Shot>,
     num_total_shots_taken: usize,
     num_columns: usize,
-    num_shots: usize
+    num_shots: usize,
 }
 
 impl Player {
@@ -21,7 +21,7 @@ impl Player {
             shots: Vec::new(),
             num_total_shots_taken: 0,
             num_columns,
-            num_shots
+            num_shots,
         }
     }
 
@@ -39,7 +39,8 @@ impl Player {
 
     pub fn shoot(&mut self) -> bool {
         if self.shots.len() < self.num_shots {
-            self.shots.push(Shot::new(self.position.col, self.position.row - 1));
+            self.shots
+                .push(Shot::new(self.position.col, self.position.row - 1));
             self.num_total_shots_taken += 1;
             true
         } else {
@@ -73,9 +74,15 @@ impl Player {
 }
 
 impl Discoverable for Player {
-    fn get_col(&self) -> usize { self.position.col }
-    fn get_row(&self) -> usize { self.position.row }
-    fn show(&self) -> char { 'A' }
+    fn get_col(&self) -> usize {
+        self.position.col
+    }
+    fn get_row(&self) -> usize {
+        self.position.row
+    }
+    fn show(&self) -> char {
+        'A'
+    }
 }
 
 impl Drawable for Player {

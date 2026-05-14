@@ -1,15 +1,12 @@
-use colored::Colorize;
+use super::{scorers::Scorers, teams::Teams};
 use crate::regex_factory::RegexFactory;
-use super::{
-    scorers::Scorers,
-    teams::Teams
-};
+use colored::Colorize;
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 pub enum GameStatus {
     NotStarted,
     Started,
-    Completed
+    Completed,
 }
 
 impl GameStatus {
@@ -26,18 +23,32 @@ pub struct Game {
     status: GameStatus,
     period_results: Option<String>,
     teams: Teams,
-    scorers: Scorers
+    scorers: Scorers,
 }
 
 impl Game {
-    pub fn from_lines(lines: &Vec<&str>, finnish_players: &Vec<String>, regex_factory: &RegexFactory) -> Option<Self> {
+    pub fn from_lines(
+        lines: &Vec<&str>,
+        finnish_players: &Vec<String>,
+        regex_factory: &RegexFactory,
+    ) -> Option<Self> {
         let mut line_number: usize = 0;
         let period_results = parse_period_results(lines, regex_factory, &mut line_number);
         if let Some(teams) = Teams::from_lines(lines, &mut line_number) {
             let status = parse_status(&period_results, teams.get_result(), regex_factory);
             let scorers = Scorers::from_lines(
-                lines, &regex_factory, finnish_players, teams.get_is_overtime(), &mut line_number);
-            Some(Game { status, period_results, teams, scorers })
+                lines,
+                &regex_factory,
+                finnish_players,
+                teams.get_is_overtime(),
+                &mut line_number,
+            );
+            Some(Game {
+                status,
+                period_results,
+                teams,
+                scorers,
+            })
         } else {
             None
         }
@@ -66,7 +77,11 @@ impl Game {
     }
 }
 
-fn parse_period_results(lines: &Vec<&str>, regex_factory: &RegexFactory, line_number: &mut usize) -> Option<String> {
+fn parse_period_results(
+    lines: &Vec<&str>,
+    regex_factory: &RegexFactory,
+    line_number: &mut usize,
+) -> Option<String> {
     if lines.len() > 0 {
         let regx = &regex_factory.regex_on_going_matches_by_time;
         let trimmed_line = lines[0].trim_start();
@@ -78,10 +93,17 @@ fn parse_period_results(lines: &Vec<&str>, regex_factory: &RegexFactory, line_nu
     None
 }
 
-fn parse_status(period_results: &Option<String>, result: &str, regex_factory: &RegexFactory) -> GameStatus {
+fn parse_status(
+    period_results: &Option<String>,
+    result: &str,
+    regex_factory: &RegexFactory,
+) -> GameStatus {
     if period_results.is_some() {
         GameStatus::Started
-    } else if regex_factory.regex_on_going_matches_by_time.is_match(result) {
+    } else if regex_factory
+        .regex_on_going_matches_by_time
+        .is_match(result)
+    {
         GameStatus::NotStarted
     } else {
         GameStatus::Completed

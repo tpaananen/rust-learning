@@ -1,22 +1,31 @@
+use crate::{
+    constants::{COL_WIDTH_AWAY, COL_WIDTH_HOME},
+    games::game::GameStatus,
+};
 use colored::Colorize;
-use crate::{games::game::GameStatus, constants::{COL_WIDTH_HOME, COL_WIDTH_AWAY}};
 
 const RESULT_WIDTH: usize = 8;
 
 struct GameResult {
     result: String,
-    is_overtime: bool
+    is_overtime: bool,
 }
 
 impl GameResult {
     fn new(result_str: &str) -> Self {
         let is_overtime = result_str.starts_with("ja ") || result_str.starts_with("vl ");
-        GameResult { result: result_str.to_owned(), is_overtime }
+        GameResult {
+            result: result_str.to_owned(),
+            is_overtime,
+        }
     }
 
     fn to_string(&self, color: &str) -> String {
         if self.is_overtime {
-            format!("{result:>RESULT_WIDTH$}", result = self.result.bright_magenta())
+            format!(
+                "{result:>RESULT_WIDTH$}",
+                result = self.result.bright_magenta()
+            )
         } else {
             format!("{result:>RESULT_WIDTH$}", result = self.result.color(color))
         }
@@ -26,12 +35,12 @@ impl GameResult {
 pub struct Teams {
     home_team: String,
     away_team: String,
-    result: GameResult
+    result: GameResult,
 }
 
 impl Teams {
     pub(super) fn from_lines(lines: &Vec<&str>, line_number: &mut usize) -> Option<Self> {
-            let curr_line = *line_number;
+        let curr_line = *line_number;
         if lines.len() <= curr_line {
             return None;
         }
@@ -48,7 +57,11 @@ impl Teams {
         let result = GameResult::new(away_team_and_result_or_time.last().unwrap().trim());
         *line_number += 1;
 
-        Some(Teams { home_team, away_team, result })
+        Some(Teams {
+            home_team,
+            away_team,
+            result,
+        })
     }
 
     pub(super) fn get_home_team_name(&self) -> &str {
@@ -69,7 +82,7 @@ impl Teams {
             "{home_team:<COL_WIDTH_HOME$} - {away_team:<COL_WIDTH_AWAY$}{result}",
             home_team = self.home_team.color(color),
             away_team = self.away_team.color(color),
-            result  = self.result.to_string(color)
+            result = self.result.to_string(color)
         );
     }
 }

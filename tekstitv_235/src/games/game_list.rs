@@ -1,9 +1,9 @@
-use rand::Rng;
-use crate::MESSAGE;
 use super::game::{Game, GameStatus};
+use crate::MESSAGE;
+use rand::RngExt;
 
 pub struct GameList {
-    games: Vec<Game>
+    games: Vec<Game>,
 }
 
 impl GameList {
@@ -37,10 +37,9 @@ impl GameList {
             return MESSAGE;
         }
 
-        let mut rng = rand::thread_rng();
-        let rand_value: f64 = rng.gen();
         let len = on_going_games.len();
-        let game = &on_going_games[(rand_value * 1000.0) as usize % len];
+        let mut rng = rand::rng();
+        let game = &on_going_games[rng.random_range(0..len)];
         game.get_home_team_name()
     }
 

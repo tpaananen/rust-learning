@@ -1,13 +1,16 @@
 use colored::*;
-use games::{game_list::GameList, game_parser::{fetch_games, fetch_future_game_pages}};
+use games::{
+    game_list::GameList,
+    game_parser::{fetch_future_game_pages, fetch_games},
+};
 use utils::print_tonight;
 
 use crate::utils::{print_line, print_selection, print_tomorrow};
 
+pub mod constants;
 pub mod games;
 pub mod regex_factory;
 pub mod utils;
-pub mod constants;
 
 const MESSAGE: &'static str = "Jäämiehet hommissa...";
 
@@ -37,7 +40,11 @@ fn print_games(games: &GameList) {
 fn print_next_target(games: &GameList) {
     print_selection();
     println!();
-    println!("{} {}", "> Seuraava kohde:".bright_blue(), &games.get_next_game_to_go());
+    println!(
+        "{} {}",
+        "> Seuraava kohde:".bright_blue(),
+        &games.get_next_game_to_go()
+    );
     println!();
     print_line();
 }

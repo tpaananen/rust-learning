@@ -1,9 +1,9 @@
-use crate::constants::{COL_WIDTH_PLAYER_NAME, COL_WIDTH_PLAYER};
-use crate::games::game::{Game};
-use crate::regex_factory::RegexFactory;
-use crate::utils::{is_empty_or_whitespace, print_loading};
 use super::fetch::fetch_pages;
 use super::game_list::GameList;
+use crate::constants::{COL_WIDTH_PLAYER, COL_WIDTH_PLAYER_NAME};
+use crate::games::game::Game;
+use crate::regex_factory::RegexFactory;
+use crate::utils::{is_empty_or_whitespace, print_loading};
 use scraper::{Html, Selector};
 
 pub async fn fetch_games(use_mock_data: bool) -> GameList {
@@ -85,13 +85,33 @@ fn parse_player_lines(pages: &Vec<String>) -> Vec<String> {
         document
             .select(&selector)
             .flat_map(|element| element.text().flat_map(|text| text.lines()))
-            .filter(|line| !is_empty_or_whitespace(line) && line.len() > COL_WIDTH_PLAYER && !line.contains("NHL"))
-            .for_each(|line| lines.push(line.trim().chars().take(COL_WIDTH_PLAYER_NAME).collect::<String>().split(" ").nth(1).unwrap().to_owned()));
+            .filter(|line| {
+                !is_empty_or_whitespace(line)
+                    && line.len() > COL_WIDTH_PLAYER
+                    && !line.contains("NHL")
+            })
+            .for_each(|line| {
+                lines.push(
+                    line.trim()
+                        .chars()
+                        .take(COL_WIDTH_PLAYER_NAME)
+                        .collect::<String>()
+                        .split(" ")
+                        .nth(1)
+                        .unwrap()
+                        .to_owned(),
+                )
+            });
     }
     lines
 }
 
-fn parse_games(games: &mut GameList, game_lines: &Vec<String>, finnish_players: &Vec<String>, regex_factory: &RegexFactory) {
+fn parse_games(
+    games: &mut GameList,
+    game_lines: &Vec<String>,
+    finnish_players: &Vec<String>,
+    regex_factory: &RegexFactory,
+) {
     let mut lines: Vec<&str> = Vec::new();
     for line in game_lines {
         if !lines.is_empty() && is_empty_or_whitespace(line) {

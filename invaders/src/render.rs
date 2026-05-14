@@ -1,10 +1,10 @@
-use std::io::{Stdout, Write, stdout};
-use std::sync::mpsc::Receiver;
-use crossterm::QueueableCommand;
-use crossterm::cursor::MoveTo;
-use crossterm::style::{SetBackgroundColor, Color};
-use crossterm::terminal::{Clear, ClearType};
 use crate::frame::Frame;
+use crossterm::cursor::MoveTo;
+use crossterm::style::{Color, SetBackgroundColor};
+use crossterm::terminal::{Clear, ClearType};
+use crossterm::QueueableCommand;
+use std::io::{stdout, Stdout, Write};
+use std::sync::mpsc::Receiver;
 
 fn render(stdout: &mut Stdout, last_frame: &Frame, curr_frame: &Frame, force: bool) {
     if force {
@@ -17,11 +17,14 @@ fn render(stdout: &mut Stdout, last_frame: &Frame, curr_frame: &Frame, force: bo
         stdout,
         last_frame,
         |col_index, row_index, previous_value, current_value, stdout| {
-        if current_value != previous_value || force {
-            stdout.queue(MoveTo(col_index as u16, row_index as u16)).unwrap();
-            println!("{}", current_value)
-        }
-    });
+            if current_value != previous_value || force {
+                stdout
+                    .queue(MoveTo(col_index as u16, row_index as u16))
+                    .unwrap();
+                println!("{}", current_value)
+            }
+        },
+    );
 
     stdout.flush().unwrap();
 }
