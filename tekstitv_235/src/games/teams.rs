@@ -39,22 +39,19 @@ pub struct Teams {
 }
 
 impl Teams {
-    pub(super) fn from_lines(lines: &Vec<&str>, line_number: &mut usize) -> Option<Self> {
+    pub(super) fn from_lines(lines: &[&str], line_number: &mut usize) -> Option<Self> {
         let curr_line = *line_number;
         if lines.len() <= curr_line {
             return None;
         }
 
         let line = &lines[curr_line];
-        let teams = line.split(" - ").collect::<Vec<_>>();
-        if teams.len() < 2 {
-            return None;
-        }
+        let (home_raw, away_and_result_raw) = line.split_once(" - ")?;
+        let (away_raw, result_raw) = away_and_result_raw.rsplit_once("  ")?;
 
-        let away_team_and_result_or_time = teams[1].split("  ").collect::<Vec<_>>();
-        let home_team = teams[0].trim().to_owned();
-        let away_team = away_team_and_result_or_time[0].trim().to_owned();
-        let result = GameResult::new(away_team_and_result_or_time.last().unwrap().trim());
+        let home_team = home_raw.trim().to_owned();
+        let away_team = away_raw.trim().to_owned();
+        let result = GameResult::new(result_raw.trim());
         *line_number += 1;
 
         Some(Teams {
@@ -77,7 +74,7 @@ impl Teams {
     }
 
     pub(super) fn print(&self, status: &GameStatus) {
-        let color = status.to_color();
+        let color = status.color_name();
         println!(
             "{home_team:<COL_WIDTH_HOME$} - {away_team:<COL_WIDTH_AWAY$}{result}",
             home_team = self.home_team.color(color),

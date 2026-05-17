@@ -5,11 +5,18 @@ pub struct RegexFactory {
     pub regex_overtime_goal: Regex,
 }
 
+impl Default for RegexFactory {
+    fn default() -> Self {
+        Self {
+            regex_on_going_matches_by_time: Regex::new(r"^\d{2}\.\d{2}")
+                .expect("time regex should compile"),
+            regex_overtime_goal: Regex::new(r"6[0-5]$").expect("overtime regex should compile"),
+        }
+    }
+}
+
 impl RegexFactory {
     pub fn new() -> Self {
-        RegexFactory {
-            regex_on_going_matches_by_time: Regex::new(r"^[0-9]{2}.[0-9]{2}").unwrap(),
-            regex_overtime_goal: Regex::new(r"([6]{1}[0-5]{1})$").unwrap(),
-        }
+        Self::default()
     }
 }

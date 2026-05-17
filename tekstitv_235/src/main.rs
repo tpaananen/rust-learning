@@ -1,8 +1,9 @@
-use colored::*;
+use colored::Colorize;
 use games::{
     game_list::GameList,
     game_parser::{fetch_future_game_pages, fetch_games},
 };
+use std::error::Error;
 use utils::print_tonight;
 
 use crate::utils::{print_line, print_selection, print_tomorrow};
@@ -12,22 +13,23 @@ pub mod games;
 pub mod regex_factory;
 pub mod utils;
 
-const MESSAGE: &'static str = "Jäämiehet hommissa...";
+const MESSAGE: &str = "Jäämiehet hommissa...";
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
     let use_mock_data = false;
-    let games = fetch_games(use_mock_data).await;
+    let games = fetch_games(use_mock_data).await?;
 
     print_games(&games);
 
     if games.all_games_completed() {
-        let future_games = fetch_future_game_pages().await;
+        let future_games = fetch_future_game_pages().await?;
         if !future_games.is_empty() {
             print_future_games(&future_games);
         }
     }
-    print_next_target(&games)
+    print_next_target(&games);
+    Ok(())
 }
 
 fn print_games(games: &GameList) {
@@ -49,7 +51,7 @@ fn print_next_target(games: &GameList) {
     print_line();
 }
 
-fn print_future_games(future_games: &Vec<String>) {
+fn print_future_games(future_games: &[String]) {
     print_tomorrow();
     for line in future_games {
         if line.contains("siir.") {
