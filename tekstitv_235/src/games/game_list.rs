@@ -1,6 +1,6 @@
 use super::game::{Game, GameStatus};
 use crate::MESSAGE;
-use rand::RngExt;
+use rand::seq::IteratorRandom;
 
 pub struct GameList {
     games: Vec<Game>,
@@ -27,23 +27,16 @@ impl GameList {
             return MESSAGE;
         }
 
-        let on_going_games = self
+        let mut rng = rand::rng();
+        self
             .games
             .iter()
             .filter(|game| game.get_status() == GameStatus::Started)
-            .collect::<Vec<_>>();
-
-        if on_going_games.is_empty() {
-            return MESSAGE;
-        }
-
-        let len = on_going_games.len();
-        let mut rng = rand::rng();
-        let game = &on_going_games[rng.random_range(0..len)];
-        game.get_home_team_name()
+            .choose(&mut rng)
+            .map_or(MESSAGE, |game| game.get_home_team_name())
     }
 
     pub(crate) fn all_games_completed(&self) -> bool {
-        self.games.len() == 0 || self.games.iter().all(|game| game.is_completed())
+        self.games.is_empty() || self.games.iter().all(|game| game.is_completed())
     }
 }

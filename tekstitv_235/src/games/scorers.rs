@@ -11,7 +11,7 @@ impl Scorer {
     fn new(
         line: &str,
         regex_factory: &RegexFactory,
-        finnish_players: &Vec<String>,
+        finnish_players: &[String],
         is_on_overtime: bool,
     ) -> Self {
         let is_finnish_player = is_finnish_player(line, finnish_players);
@@ -23,7 +23,7 @@ impl Scorer {
         }
     }
 
-    fn to_string(&self) -> String {
+    fn colorized_text(&self) -> String {
         if self.is_overtime {
             format!("{name}", name = self.name.bright_magenta())
         } else if self.is_finnish_player {
@@ -34,7 +34,7 @@ impl Scorer {
     }
 }
 
-fn is_finnish_player(line: &str, finnish_players: &Vec<String>) -> bool {
+fn is_finnish_player(line: &str, finnish_players: &[String]) -> bool {
     line.len() > 2
         && (line.starts_with("(")
             || line.starts_with(" (")
@@ -48,9 +48,9 @@ pub struct Scorers {
 
 impl Scorers {
     pub(super) fn from_lines(
-        lines: &Vec<&str>,
+        lines: &[&str],
         regex_factory: &RegexFactory,
-        finnish_players: &Vec<String>,
+        finnish_players: &[String],
         is_on_overtime: bool,
         line_number: &mut usize,
     ) -> Self {
@@ -69,17 +69,17 @@ impl Scorers {
         for (home, away) in &self.scorers {
             println!(
                 "{home_score} {away_score}",
-                home_score = home.to_string(),
-                away_score = away.to_string()
+                home_score = home.colorized_text(),
+                away_score = away.colorized_text()
             );
         }
     }
 }
 
 fn parse_scores(
-    lines: &Vec<&str>,
+    lines: &[&str],
     regex_factory: &RegexFactory,
-    finnish_players: &Vec<String>,
+    finnish_players: &[String],
     is_on_overtime: bool,
     line_number: &mut usize,
 ) -> Vec<(Scorer, Scorer)> {

@@ -10,7 +10,7 @@ pub enum GameStatus {
 }
 
 impl GameStatus {
-    pub(super) fn to_color(&self) -> &str {
+    pub(super) fn color_name(self) -> &'static str {
         match self {
             GameStatus::Completed => "bright green",
             GameStatus::NotStarted => "bright white",
@@ -28,17 +28,17 @@ pub struct Game {
 
 impl Game {
     pub fn from_lines(
-        lines: &Vec<&str>,
-        finnish_players: &Vec<String>,
+        lines: &[&str],
+        finnish_players: &[String],
         regex_factory: &RegexFactory,
     ) -> Option<Self> {
         let mut line_number: usize = 0;
         let period_results = parse_period_results(lines, regex_factory, &mut line_number);
         if let Some(teams) = Teams::from_lines(lines, &mut line_number) {
-            let status = parse_status(&period_results, teams.get_result(), regex_factory);
+            let status = parse_status(period_results.as_deref(), teams.get_result(), regex_factory);
             let scorers = Scorers::from_lines(
                 lines,
-                &regex_factory,
+                regex_factory,
                 finnish_players,
                 teams.get_is_overtime(),
                 &mut line_number,
@@ -63,9 +63,8 @@ impl Game {
     }
 
     pub fn print(&self) {
-        let res = self.period_results.as_ref();
-        if res.is_some() {
-            println!("{period_results}", period_results = res.unwrap().yellow());
+        if let Some(period_results) = self.period_results.as_ref() {
+            println!("{period_results}", period_results = period_results.yellow());
         }
 
         self.teams.print(&self.status);
@@ -78,13 +77,13 @@ impl Game {
 }
 
 fn parse_period_results(
-    lines: &Vec<&str>,
+    lines: &[&str],
     regex_factory: &RegexFactory,
     line_number: &mut usize,
 ) -> Option<String> {
-    if lines.len() > 0 {
+    if !lines.is_empty() {
         let regx = &regex_factory.regex_on_going_matches_by_time;
-        let trimmed_line = lines[0].trim_start();
+        let trimmed_line = lines.first()?.trim_start();
         if regx.is_match(trimmed_line) {
             *line_number += 1;
             return Some(trimmed_line.to_owned());
@@ -94,7 +93,7 @@ fn parse_period_results(
 }
 
 fn parse_status(
-    period_results: &Option<String>,
+    period_results: Option<&str>,
     result: &str,
     regex_factory: &RegexFactory,
 ) -> GameStatus {
