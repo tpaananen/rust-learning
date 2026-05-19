@@ -2,6 +2,8 @@ use std::io::{stdout, Write};
 
 use colored::Colorize;
 
+use crate::localization::Locale;
+
 pub fn is_empty_or_whitespace(line: &str) -> bool {
     line.is_empty() || line.chars().all(|c| c.is_whitespace())
 }
@@ -16,41 +18,41 @@ pub fn print_line() {
     stdout().flush().expect("flushing failed");
 }
 
-pub fn print_tonight() {
+pub fn print_tonight(locale: Locale) {
     println!(
         "{}{}{}",
         "================= ".bright_red(),
-        "NHL TONIGHT ".bright_white(),
+        locale.tonight_heading().bright_white(),
         "  ==================================".bright_blue()
     );
     stdout().flush().expect("flushing failed");
 }
 
-pub fn print_tomorrow() {
+pub fn print_tomorrow(locale: Locale) {
     println!(
         "{}{}{}",
         "================= ".bright_red(),
-        "NHL TOMORROW ".bright_white(),
+        locale.tomorrow_heading().bright_white(),
         " ==================================".bright_blue()
     );
     stdout().flush().expect("flushing failed");
 }
 
-pub fn print_loading() {
+pub fn print_loading(locale: Locale) {
     println!(
         "{}{}{}",
         "================= ".bright_red(),
-        "NHL LOADING ".bright_white(),
+        locale.loading_heading().bright_white(),
         "  ==================================".bright_blue()
     );
     stdout().flush().expect("flushing failed");
 }
 
-pub fn print_selection() {
+pub fn print_selection(locale: Locale) {
     println!(
         "{}{}{}",
         "================= ".bright_red(),
-        "    NEXT>    ".bright_white(),
+        locale.selection_heading().bright_white(),
         " ==================================".bright_blue()
     );
     stdout().flush().expect("flushing failed");

@@ -1,5 +1,4 @@
 use super::game::{Game, GameStatus};
-use crate::MESSAGE;
 use rand::seq::IteratorRandom;
 
 pub struct GameList {
@@ -22,18 +21,17 @@ impl GameList {
         }
     }
 
-    pub fn get_next_game_to_go(&self) -> &str {
+    pub fn get_next_game_to_go<'a>(&'a self, no_active_game_message: &'a str) -> &'a str {
         if self.games.is_empty() {
-            return MESSAGE;
+            return no_active_game_message;
         }
 
         let mut rng = rand::rng();
-        self
-            .games
+        self.games
             .iter()
             .filter(|game| game.get_status() == GameStatus::Started)
             .choose(&mut rng)
-            .map_or(MESSAGE, |game| game.get_home_team_name())
+            .map_or(no_active_game_message, |game| game.get_home_team_name())
     }
 
     pub(crate) fn all_games_completed(&self) -> bool {

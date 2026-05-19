@@ -3,6 +3,7 @@ use games::{
     game_list::GameList,
     game_parser::{fetch_future_game_pages, fetch_games},
 };
+use localization::Locale;
 use std::error::Error;
 use utils::print_tonight;
 
@@ -10,49 +11,49 @@ use crate::utils::{print_line, print_selection, print_tomorrow};
 
 pub mod constants;
 pub mod games;
+pub mod localization;
 pub mod regex_factory;
 pub mod utils;
 
-const MESSAGE: &str = "Jäämiehet hommissa...";
-
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
+    let locale = Locale::from_args(std::env::args().skip(1));
     let use_mock_data = false;
-    let games = fetch_games(use_mock_data).await?;
+    let games = fetch_games(use_mock_data, locale).await?;
 
-    print_games(&games);
+    print_games(&games, locale);
 
     if games.all_games_completed() {
         let future_games = fetch_future_game_pages().await?;
         if !future_games.is_empty() {
-            print_future_games(&future_games);
+            print_future_games(&future_games, locale);
         }
     }
-    print_next_target(&games);
+    print_next_target(&games, locale);
     Ok(())
 }
 
-fn print_games(games: &GameList) {
-    print_tonight();
+fn print_games(games: &GameList, locale: Locale) {
+    print_tonight(locale);
     println!();
     games.print();
     println!();
 }
 
-fn print_next_target(games: &GameList) {
-    print_selection();
+fn print_next_target(games: &GameList, locale: Locale) {
+    print_selection(locale);
     println!();
     println!(
         "{} {}",
-        "> Seuraava kohde:".bright_blue(),
-        &games.get_next_game_to_go()
+        locale.next_target_label().bright_blue(),
+        games.get_next_game_to_go(locale.no_active_game_message())
     );
     println!();
     print_line();
 }
 
-fn print_future_games(future_games: &[String]) {
-    print_tomorrow();
+fn print_future_games(future_games: &[String], locale: Locale) {
+    print_tomorrow(locale);
     for line in future_games {
         if line.contains("siir.") {
             println!("{}", line.trim_start().white().dimmed());

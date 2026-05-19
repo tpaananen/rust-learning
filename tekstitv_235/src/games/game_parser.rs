@@ -2,6 +2,7 @@ use super::fetch::fetch_pages;
 use super::game_list::GameList;
 use crate::constants::{COL_WIDTH_PLAYER, COL_WIDTH_PLAYER_NAME};
 use crate::games::game::Game;
+use crate::localization::Locale;
 use crate::regex_factory::RegexFactory;
 use crate::utils::{is_empty_or_whitespace, print_loading};
 use reqwest::Client;
@@ -14,8 +15,8 @@ type AppResult<T> = Result<T, Box<dyn Error + Send + Sync>>;
 static BOXBOX_PRE_SELECTOR: LazyLock<Selector> =
     LazyLock::new(|| Selector::parse(".boxbox > pre").expect("selector literal should parse"));
 
-pub async fn fetch_games(use_mock_data: bool) -> AppResult<GameList> {
-    print_loading();
+pub async fn fetch_games(use_mock_data: bool, locale: Locale) -> AppResult<GameList> {
+    print_loading(locale);
     let client = create_http_client()?;
     let regex_factory = RegexFactory::new();
     let (game_lines, finnish_players) = tokio::try_join!(
