@@ -7,37 +7,6 @@ pub enum Locale {
 }
 
 impl Locale {
-    pub fn from_args(args: impl IntoIterator<Item = String>) -> Self {
-        let mut args = args.into_iter();
-        while let Some(arg) = args.next() {
-            if let Some(value) = arg.strip_prefix("--lang=") {
-                return Self::from_code(value).unwrap_or(Self::Fi);
-            }
-
-            if arg == "--lang" || arg == "-l" {
-                return args
-                    .next()
-                    .as_deref()
-                    .and_then(Self::from_code)
-                    .unwrap_or(Self::Fi);
-            }
-
-            if let Some(locale) = Self::from_code(&arg) {
-                return locale;
-            }
-        }
-
-        Self::Fi
-    }
-
-    fn from_code(value: &str) -> Option<Self> {
-        match value.to_ascii_lowercase().as_str() {
-            "fi" | "finnish" => Some(Self::Fi),
-            "en" | "english" => Some(Self::En),
-            _ => None,
-        }
-    }
-
     pub fn tonight_heading(self) -> &'static str {
         match self {
             Self::Fi => "NHL TANAAN ",

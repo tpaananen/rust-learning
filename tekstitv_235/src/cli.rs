@@ -10,8 +10,38 @@ pub struct CliOptions {
 
 pub fn parse_args(args: &[String]) -> CliOptions {
     CliOptions {
-        locale: Locale::from_args(args.iter().cloned()),
+        locale: parse_locale(args),
         show_help: should_print_help(args),
+    }
+}
+
+fn parse_locale(args: &[String]) -> Locale {
+    let mut args = args.iter();
+    while let Some(arg) = args.next() {
+        if let Some(value) = arg.strip_prefix("--lang=") {
+            return parse_locale_code(value).unwrap_or(Locale::Fi);
+        }
+
+        if arg == "--lang" || arg == "-l" {
+            return args
+                .next()
+                .and_then(|value| parse_locale_code(value))
+                .unwrap_or(Locale::Fi);
+        }
+
+        if let Some(locale) = parse_locale_code(arg) {
+            return locale;
+        }
+    }
+
+    Locale::Fi
+}
+
+fn parse_locale_code(value: &str) -> Option<Locale> {
+    match value.to_ascii_lowercase().as_str() {
+        "fi" | "finnish" => Some(Locale::Fi),
+        "en" | "english" => Some(Locale::En),
+        _ => None,
     }
 }
 
