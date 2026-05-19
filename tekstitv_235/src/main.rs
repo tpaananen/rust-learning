@@ -1,4 +1,5 @@
 use colored::Colorize;
+use cli::{maybe_print_help, parse_args};
 use games::{
     game_list::GameList,
     game_parser::{fetch_future_game_pages, fetch_games},
@@ -10,6 +11,7 @@ use utils::print_tonight;
 use crate::utils::{print_line, print_selection, print_tomorrow};
 
 pub mod constants;
+pub mod cli;
 pub mod games;
 pub mod localization;
 pub mod regex_factory;
@@ -17,7 +19,14 @@ pub mod utils;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
-    let locale = Locale::from_args(std::env::args().skip(1));
+    let args: Vec<String> = std::env::args().collect();
+    let cli = parse_args(&args[1..]);
+
+    if maybe_print_help(cli) {
+        return Ok(());
+    }
+
+    let locale = cli.locale;
     let use_mock_data = false;
     let games = fetch_games(use_mock_data, locale).await?;
 

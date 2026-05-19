@@ -1,3 +1,5 @@
+use indoc::formatdoc;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Locale {
     Fi,
@@ -75,6 +77,39 @@ impl Locale {
         match self {
             Self::Fi => "Huoltotauko...",
             Self::En => "Maintenance break...",
+        }
+    }
+
+    pub fn help_text(self, program_name: &str) -> String {
+        match self {
+            Self::Fi => formatdoc!(
+                "
+                {program_name} - NHL teksti-tv -hakija
+
+                Kaytto:
+                    {program_name} [valinnat]
+
+                Valinnat:
+                    --help, -h, -?, /?       Nayta tama ohje
+                    --lang <fi|en>, -l <fi|en> Valitse kieli
+                    --lang=fi|en             Valitse kieli
+                    fi | en                  Pikavalinta kielelle
+                "
+            ),
+            Self::En => formatdoc!(
+                "
+                {program_name} - NHL teletext fetcher
+
+                Usage:
+                    {program_name} [options]
+
+                Options:
+                    --help, -h, -?, /?       Show this help
+                    --lang <fi|en>, -l <fi|en> Select language
+                    --lang=fi|en             Select language
+                    fi | en                  Language shortcut
+                "
+            ),
         }
     }
 }
